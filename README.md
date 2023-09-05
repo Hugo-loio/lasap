@@ -13,5 +13,10 @@ Currently only Julia is supported.
 
 * Numpy
 * Pandas
+* PyArrow
 
 ### Julia
+
+* DataFrames.jl
+* [Parquet.jl](https://github.com/JuliaIO/Parquet.jl)
+* OrderedCollections

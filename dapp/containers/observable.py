@@ -2,6 +2,7 @@
 import pyarrow as pa
 import pandas as pd
 import numpy as np
+import dapp.utils.io as io
 
 class Observable:
 
@@ -77,6 +78,11 @@ class Observable:
         return tables
 
     def to_disk(self, dirname = None):
+        name = self.props.loc[0,'name']
+        tables = self.to_parquet()
+        io.write_parquet(tables['props'], name + '_props.parquet', dirname) 
+        io.write_parquet(tables['data'], name + '_data.parquet', dirname) 
+
 
 def from_pandas(props, data):
     obs = Observable('dummy')
@@ -93,3 +99,7 @@ def from_pandas(props, data):
 def from_parquet(props, data):
     return from_pandas(props.to_pandas(), data.to_pandas())
 
+def from_disk(name, dirname = None):
+    props = io.read_parquet(name + '_props.parquet', dirname) 
+    data = io.read_parquet(name + '_data.parquet', dirname) 
+    return from_parquet(props, data)

@@ -4,13 +4,14 @@ import glob
 import re
 import numpy as np
 import pickle
+import pyarrow.parquet as pq
 
-def root_path():
-    file_path = os.path.dirname(os.path.realpath(__file__))
-    return file_path[:file_path.rfind("/")]
+def cwd_path():
+    return os.getcwd()
+    #return file_path[:file_path.rfind("/")]
 
 def plot_dir():
-    return root_path() + "/plots/"
+    return cwd_path() + "/plots/"
 
 def data_dir():
     custom_path = os.environ.get('DATA_DIR')
@@ -22,26 +23,22 @@ def data_dir():
                 return custom_path + '/'
         else:
             print("No directory in " + custom_path)
-    return root_path() + "/data/"
+    return cwd_path() + "/data/"
 
 def check_data_dir():
-    if(not os.path.isdir(root_path() + "/data")):
+    if(not os.path.isdir(data_dir())):
         try:
-            os.mkdir(root_path() + "/data")
+            os.mkdir(data_dir())
         except FileExistsError:
             print("data dir was created by another process")
-
+    print("Data directory: " + data_dir())
 check_data_dir()
-print("Data directory: " + data_dir())
 
 def check_plot_dir():
-    if(not os.path.isdir(root_path() + "/plots")):
-        os.mkdir(root_path() + "/plots")
+    if(not os.path.isdir(cwd_path() + "/plots")):
+        os.mkdir(cwd_path() + "/plots")
 
-def clear_file(file_name):
-    open(data_dir() + file_name, 'w').close()
-
-def remove_file(file_name):
+def remove_data_file(file_name):
     os.remove(data_dir() + file_name)
 
 def check_clear_file(file_name):
@@ -56,11 +53,6 @@ def check_clear_file(file_name):
     else:
         return True
 
-
-def find_file_list(basename):
-    return glob.glob(data_dir() + basename + "_v*.dat")
-
-'''
 def save_pickle(pickle_name, obj):
     pickle_path = data_dir() + pickle_name
     with open(pickle_path, 'wb') as pickle_file:
@@ -73,9 +65,8 @@ def load_pickle(pickle_name):
             return pickle.load( pickle_file)
     except EOFError:
         return None
-        '''
 
-def check_folder(name):
+def check_data_subdir(name):
     path = data_dir() + name
     if(not os.path.isdir(path)):
         try:
@@ -98,3 +89,18 @@ def check_file(name):
 
 def print_table(dataframe):
     print(tabulate(dataframe, headers = 'keys', tablefmt = 'psql'))
+
+def write_parquet(table, name, dirname = None):
+    path = name
+    if(dirname != None):
+        check_data_subdir(dirname)
+        path = dirname + "/" + path
+    pq.write_table(table, data_dir() + path)
+
+def read_parquet(name, dirname = None):
+    path = name
+    if(dirname != None):
+        path = dirname + "/" + path
+    return pq.read_table(data_dir() + path)
+
+
