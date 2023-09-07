@@ -7,7 +7,7 @@ Although the post-processing is done in python, the data structures can be creat
 To achieve this goal I provide functions that generate the parquet tables in other languages with the intended format for the python package.
 Currently only Julia is supported.
 
-## Dependencies
+## User dependencies
 
 ### Python
 
@@ -17,6 +17,5 @@ Currently only Julia is supported.
 
 ### Julia
 
-* DataFrames.jl
-* Parquet2.jl
+* DataFrames
 * OrderedCollections
