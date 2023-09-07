@@ -83,6 +83,12 @@ class Observable:
         io.write_parquet(tables['props'], name + '_props.parquet', dirname) 
         io.write_parquet(tables['data'], name + '_data.parquet', dirname) 
 
+    #TODO
+    """
+    def array_type(type):
+
+    def key_types(types): 
+    """
 
 def from_pandas(props, data):
     obs = Observable('dummy')

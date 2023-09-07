@@ -8,21 +8,18 @@ import pyarrow.parquet as pq
 
 def cwd_path():
     return os.getcwd()
-    #return file_path[:file_path.rfind("/")]
+#return file_path[:file_path.rfind("/")]
 
 def plot_dir():
     return cwd_path() + "/plots/"
 
 def data_dir():
-    custom_path = os.environ.get('DATA_DIR')
+    custom_path = os.environ.get('DAPP_DATA_DIR')
     if custom_path != None:
-        if os.path.isdir(custom_path): 
-            if custom_path[-1] == '/':
-                return custom_path
-            else:
-                return custom_path + '/'
+        if custom_path[-1] == '/':
+            return custom_path
         else:
-            print("No directory in " + custom_path)
+            return custom_path + '/'
     return cwd_path() + "/data/"
 
 def check_data_dir():
@@ -40,18 +37,6 @@ def check_plot_dir():
 
 def remove_data_file(file_name):
     os.remove(data_dir() + file_name)
-
-def check_clear_file(file_name):
-    if os.path.isfile(data_dir() + file_name):
-        check = input("Clear contents of " + file_name + " ? [y/n] ")
-        if check.lower() != "y":
-            print(file_name + " not cleared")
-            return False
-        else:
-            clear_file(file_name)
-            return True
-    else:
-        return True
 
 def save_pickle(pickle_name, obj):
     pickle_path = data_dir() + pickle_name
@@ -102,5 +87,3 @@ def read_parquet(name, dirname = None):
     if(dirname != None):
         path = dirname + "/" + path
     return pq.read_table(data_dir() + path)
-
-
