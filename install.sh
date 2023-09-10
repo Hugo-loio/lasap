@@ -16,13 +16,14 @@ julia_dependencies(){
 julia_install(){
   echo "Installing julia interface"
   #julia_dependencies
-  julia -e "using Pkg; Pkg.develop(path=\"$pkg/julia/DappInterface\")"
-  #julia -e "using Pkg; Pkg.develop(path=\"$(dirname "$0")/julia/DappInterface\")"
+  julia -e "using Pkg; Pkg.develop(path=\"$pkg/julia/LasapInterface\")"
 }
 
 pkg=$(dirname "$0")
 
 pip install --user --break-system-packages $pkg
+
+#exit
 
 langs="julia dummy"
 

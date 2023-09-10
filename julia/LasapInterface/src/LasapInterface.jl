@@ -1,4 +1,4 @@
-module DappInterface
+module LasapInterface
 
 using DataFrames, OrderedCollections, Parquet2
 

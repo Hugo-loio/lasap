@@ -2,4 +2,4 @@ __all__ = [
         "observable"
         ]
 
-from dapp.containers import *
+from lasap.containers import *

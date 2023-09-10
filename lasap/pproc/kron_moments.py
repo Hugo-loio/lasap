@@ -3,8 +3,8 @@ import pickle
 import sys
 import os
 
-import dapp.utils.miscellaneous as misc
-from dapp.containers.observable import Observable
+import lasap.utils.miscellaneous as misc
+from lasap.containers.observable import Observable
 
 def average_std_k_moment(array, k):
     if(k == 1):

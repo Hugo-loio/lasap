@@ -1,8 +1,7 @@
-#import copy
 import pyarrow as pa
 import pandas as pd
 import numpy as np
-import dapp.utils.io as io
+import lasap.utils.io as io
 
 class Observable:
 
@@ -48,6 +47,9 @@ class Observable:
         self.data.loc[len(self.data)] = row
         return 0
 
+    def merge_data(self, data_df):
+        self.data = pd.concat([self.data,data_df], ignore_index = True)
+
     def find(self, keyvals):
         for i, row in self.data.iterrows():
             if(np.array_equal(row.iloc[:self.num_keys].to_numpy(),keyvals)):
@@ -70,6 +72,9 @@ class Observable:
                 vals[-1].append(row.iloc[num_keys:].to_numpy().reshape(self.shape))
         return keys, vals, remain_keynames
 
+    def get_name(self):
+        return self.props.loc[0,'name']
+
 
     def to_parquet(self):
         tables = {}
@@ -77,8 +82,9 @@ class Observable:
         tables['data'] = pa.Table.from_pandas(self.data)
         return tables
 
-    def to_disk(self, dirname = None):
-        name = self.props.loc[0,'name']
+    def to_disk(self, name = None, dirname = None):
+        if(name == None):
+            name = self.props.loc[0,'name']
         tables = self.to_parquet()
         io.write_parquet(tables['props'], name + '_props.parquet', dirname) 
         io.write_parquet(tables['data'], name + '_data.parquet', dirname) 

@@ -3,4 +3,4 @@ __all__ = [
         "kron_moments"
         ]
 
-from dapp.pproc import *
+from lasap.pproc import *

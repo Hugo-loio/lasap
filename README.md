@@ -1,21 +1,20 @@
-# dapp
+# lasap (labeled array storage and post-processing)
 
-A data structure and post-processing python package.
-The data is stored in a parquet format with specific labeling.
+This package provides interfaces in different languages for data structures with a series of labeled multi-dimensional arrays. It utilizes the Apache Parquet file format for data storage and transmission between different languages.
+It also provides post-processing functions for the data, e.g. averaging over a label (key), implemented in python.
 
-Although the post-processing is done in python, the data structures can be created in other languages.
-To achieve this goal I provide functions that generate the parquet tables in other languages with the intended format for the python package.
-Currently only Julia is supported.
+Currently only Python and Julia are supported.
+
+**Disclamer:** This package is mostly intended for personal use and is not documented. 
 
 ## User dependencies
 
-### Python
+**Python**
 
 * Numpy
 * Pandas
 * PyArrow
 
-### Julia
+**Julia**
 
-* DataFrames
 * OrderedCollections

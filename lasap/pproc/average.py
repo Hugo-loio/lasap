@@ -3,7 +3,7 @@ import pickle
 import sys
 import os
 
-from dapp.containers.observable import Observable
+from lasap.containers.observable import Observable
 
 def average(obs : Observable, avg_key : str):
     keys, vals, keynames = obs.get_merged_key_data(avg_key)
