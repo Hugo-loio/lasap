@@ -1,4 +1,4 @@
-# lasap (labeled array storage and post-processing)
+# labeled array storage and post-processing (lasap)
 
 This package provides interfaces in different languages for data structures with a series of labeled multi-dimensional arrays. It utilizes the Apache Parquet file format for data storage and transmission between different languages.
 It also provides post-processing functions for the data, e.g. averaging over a label (key), implemented in python.
@@ -18,3 +18,7 @@ Currently only Python and Julia are supported.
 **Julia**
 
 * OrderedCollections
+
+## Installation
+
+Install and uninstall with the provided scripts in the root folder.
