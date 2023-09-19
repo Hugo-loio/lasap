@@ -1,0 +1,6 @@
+#!/bin/sh
+
+[ ! $# -eq 2 ] && echo "Error: Wrong number of arguments" && exit
+
+python -c "from lasap.pproc.merge_daemon import merge_daemon; merge_daemon('$1', $2)"
+

@@ -22,14 +22,12 @@ def data_dir():
             return custom_path + '/'
     return cwd_path() + "/data/"
 
-def check_data_dir():
-    if(not os.path.isdir(data_dir())):
+def check_dir(path):
+    if(not os.path.isdir(path)):
         try:
-            os.mkdir(data_dir())
+            os.mkdir(path)
         except FileExistsError:
-            print("data dir was created by another process")
-    print("Data directory: " + data_dir())
-check_data_dir()
+            print(path + " was created by another process")
 
 def check_plot_dir():
     if(not os.path.isdir(cwd_path() + "/plots")):
@@ -53,11 +51,7 @@ def load_pickle(pickle_name):
 
 def check_data_subdir(name):
     path = data_dir() + name
-    if(not os.path.isdir(path)):
-        try:
-            os.mkdir(path)
-        except FileExistsError:
-            print(path + " was created by another process")
+    check_dir(path)
     return path
 
 def ls_match(match, folder_path = None):
@@ -76,11 +70,11 @@ def print_table(dataframe):
     print(tabulate(dataframe, headers = 'keys', tablefmt = 'psql'))
 
 def write_parquet(table, name, dirname = None):
+    check_dir(data_dir())
     path = name
     if(dirname != None):
-        check_data_subdir(dirname)
-        path = dirname + "/" + path
-    pq.write_table(table, data_dir() + path)
+        path = check_data_subdir(dirname) + "/" + path
+    pq.write_table(table, path)
 
 def read_parquet(name, dirname = None):
     path = name

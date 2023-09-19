@@ -23,6 +23,8 @@ pkg=$(dirname "$0")
 
 pip install --user --break-system-packages $pkg
 
+cp $pkg/scripts/lasap_merge_daemon $HOME/.local/bin/lasap_merge_daemon
+
 #exit
 
 langs="julia dummy"

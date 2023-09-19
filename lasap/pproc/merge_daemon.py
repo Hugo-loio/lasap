@@ -12,7 +12,7 @@ def merge_daemon(dirname : str, num_outputs : int):
     read_outputs = 0
     props_tables = []
     merged_names = []
-    path = io.data_dir() + "/" + dirname
+    path = io.data_dir() + dirname
     merged_dirname = dirname + "_merged"
     while(read_outputs < num_outputs):
         files = io.ls_match(".*_data.parquet", path)
