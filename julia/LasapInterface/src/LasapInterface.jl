@@ -74,18 +74,23 @@ function check_dir(dir::String)
     end
 end
 
-function todisk(obs::Observable, dirname::String)
+function todisk(obs::Observable, dirname::String, name::String=""; verbose::Bool=true)
     path = data_dir()
     check_dir(path)
     if(length(dirname) != 0)
         path = data_dir() * dirname
         check_dir(path)
     end
-    name = obs.props[1,"name"]
+    if(length(name) == 0)
+        name = obs.props[1,"name"]
+    end
     name_props = name * "_props.parquet"
     name_data = name * "_data.parquet"
     Parquet2.writefile(path * "/" * name_props, obs.props)
     Parquet2.writefile(path * "/" * name_data, obs.data)
+    if(verbose)
+        println("Outputed data files to: " * path * "/" * name)
+    end
 end
 
 # module end
