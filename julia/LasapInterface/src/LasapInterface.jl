@@ -2,6 +2,8 @@ module LasapInterface
 
 using DataFrames, OrderedCollections, Parquet2
 
+export Observable, append!, todisk
+
 struct Observable
     props::DataFrame
     data::DataFrame
@@ -51,7 +53,7 @@ end
 
 function data_dir()
     try 
-        custompath = ENV["DAPP_DATA_DIR"]
+        custompath = ENV["LASAP_DATA_DIR"]
         if(custompath[end] == "/")
             return custompath
         else
@@ -72,7 +74,7 @@ function check_dir(dir::String)
     end
 end
 
-function to_disk(obs::Observable, dirname::String)
+function todisk(obs::Observable, dirname::String)
     path = data_dir()
     check_dir(path)
     if(length(dirname) != 0)
