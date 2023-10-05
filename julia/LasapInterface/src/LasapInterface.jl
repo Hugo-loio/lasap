@@ -74,7 +74,7 @@ function check_dir(dir::String)
     end
 end
 
-function todisk(obs::Observable, dirname::String, name::String=""; verbose::Bool=true)
+function todisk(obs::Observable; name::String="", dirname::String="", verbose::Bool=false, tarname::String="")
     path = data_dir()
     check_dir(path)
     if(length(dirname) != 0)
@@ -86,12 +86,22 @@ function todisk(obs::Observable, dirname::String, name::String=""; verbose::Bool
     end
     name_props = name * "_props.parquet"
     name_data = name * "_data.parquet"
-    Parquet2.writefile(path * "/" * name_props, obs.props)
-    Parquet2.writefile(path * "/" * name_data, obs.data)
+    path_props = path * "/" * name_props
+    path_data = path * "/" * name_data
+    Parquet2.writefile(path_props, obs.props)
+    Parquet2.writefile(path_data, obs.data)
+
     if(verbose)
         println("Outputed data files to: " * path * "/" * name)
     end
+
+    if(length(tarname) > 0)
+        tarpath = path * "/" * tarname * ".tar"
+        # Bundle files in tar with tarname, and remove the separate files
+        readchomp(`tar -rf $tarpath -C $path $name_props $name_data`)
+        rm(path_props)
+        rm(path_data)
+    end
 end
 
-# module end
 end
