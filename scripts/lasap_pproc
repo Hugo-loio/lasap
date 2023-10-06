@@ -1,0 +1,60 @@
+#!/bin/sh
+
+mode_usage(){
+  echo "\nUSAGE\n\tlasap_pproc -m|--mode $1 -a|--args \"$2\""
+}
+
+HELP=0
+mode=""
+
+while [ $# -gt 0 ]; do
+  case $1 in
+    -m|--mode)
+      mode="$2"
+      shift && shift
+      ;;
+    -h|--help)
+      HELP=1
+      shift
+      ;;
+    -a|--args)
+      args="$2"
+      shift && shift
+      ;;
+    *)
+      #OTHER_ARGUMENTS+=("$1")
+      echo "ERROR: Argument $1 not recognized!" 
+      exit
+      ;;
+  esac
+done
+
+
+if [ -z $mode ]; then 
+  if [ $HELP -eq 1 ]; then
+    mode_usage "<mode>" "<args>"
+    echo "\nAvailable modes:\n - merge\n - average"
+    echo "Try 'lasap_pproc -h -m <mode>' to get specific information about mode <mode>"
+  else
+    echo "ERROR: No arguments parsed"
+    echo "For help use\n\tlasap_pproc -h"
+  fi
+else
+  if [ $HELP -eq 1 ]; then
+    case $mode in
+      "merge")
+	echo "\nDESCRIPTION\n\tMerge all the data in a subdirectory <dirname> of the data directory, acoording to matching properties. Merged data is placed in the directory <dirname>_merged"
+	mode_usage $mode "<dirname>"
+	;;
+      *)
+	echo "ERROR: mode $mode not recognized!" && exit
+	;;
+    esac
+  else
+    python -c "import lasap.pproc.parse_args" $mode $args
+  fi
+fi
+
+#[ ! $# -eq 2 ] && echo "Error: Wrong number of arguments\nExpected lasap_merge <dirname>" && exit
+
+#python -c "from lasap.pproc.merge_daemon import merge_daemon; merge_daemon('$1', $2)"

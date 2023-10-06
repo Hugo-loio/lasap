@@ -74,13 +74,12 @@ function check_dir(dir::String)
     end
 end
 
-function todisk(obs::Observable; name::String="", dirname::String="", verbose::Bool=false, tarname::String="")
+function todisk(obs::Observable, dirname::String;
+        name::String="", verbose::Bool=false, tarname::String="")
     path = data_dir()
     check_dir(path)
-    if(length(dirname) != 0)
-        path = data_dir() * dirname
-        check_dir(path)
-    end
+    path = data_dir() * dirname
+    check_dir(path)
     if(length(name) == 0)
         name = obs.props[1,"name"]
     end
