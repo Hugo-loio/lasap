@@ -39,25 +39,25 @@ def merge(dirname : str):
 
     timer = Timer()
 
-    merged_files = io.ls_match(".*_props\.parquet", path + "_merged")
+    merged_files = io.ls_match(".*_data\.parquet", path + "_merged")
     for file in merged_files:
         obs = observable.from_disk(file[:-13], merged_dirname)
         merged_names.append(obs.get_name())
 
     print("Merging loose files...")
     files = io.ls_match(".*_data\.parquet", path)
-    n = length(files)
+    n = len(files)
     div = 10  
     if(n < div):
         div = n
     for i,file in enumerate(files):
         merge_file(file, merged_names, dirname, merged_dirname)
         e = i+1
-        if(e % int(n_res/div) == 0 or e == n_res):
-            print(str(int(100*e/n_res)) + " % at " + timer.pretty_time())
+        if(e % int(n/div) == 0 or e == n):
+            print(str(int(100*e/n)) + " % at " + timer.pretty_time())
 
     tarfiles = io.ls_match(".*\.tar", path)
-    n = length(tarfiles)
+    n = len(tarfiles)
     div = 10  
     if(n < div):
         div = n
@@ -79,8 +79,8 @@ def merge(dirname : str):
             os.remove(path + "/" + tarname)
 
         e = i+1
-        if(e % int(n_res/div) == 0 or e == n_res):
-            print(str(int(100*e/n_res)) + " % at " + timer.pretty_time())
+        if(e % int(n/div) == 0 or e == n):
+            print(str(int(100*e/n)) + " % at " + timer.pretty_time())
 
     if len(os.listdir(path)) == 0:
         os.rmdir(path)

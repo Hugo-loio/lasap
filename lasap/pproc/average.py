@@ -5,7 +5,7 @@ import os
 
 from lasap.containers.observable import Observable
 
-def average(obs : Observable, avg_key : str):
+def average_obs(obs : Observable, avg_key : str):
     keys, vals, keynames = obs.get_merged_key_data(avg_key)
 
     n_samples = len(vals[0])
@@ -25,3 +25,5 @@ def average(obs : Observable, avg_key : str):
         obs_avg.append(np.array([vals_avg[i], vals_err[i]]), keys[i])
 
     return obs_avg
+
+#def average(dirname, 
