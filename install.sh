@@ -23,7 +23,7 @@ pkg=$(dirname "$0")
 
 pip install --user --break-system-packages $pkg
 
-cp $pkg/scripts/* $HOME/.local/bin 2>/dev/null
+cp $pkg/scripts/* $HOME/.local/bin #2>/dev/null TODO: find a better solution for this
 
 #exit
 
