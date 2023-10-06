@@ -14,7 +14,7 @@ def plot_dir():
     return cwd_path() + "/plots/"
 
 def data_dir():
-    custom_path = os.environ.get('DAPP_DATA_DIR')
+    custom_path = os.environ.get('LASAP_DATA_DIR')
     if custom_path != None:
         if custom_path[-1] == '/':
             return custom_path
