@@ -26,4 +26,12 @@ def average_obs(obs : Observable, avg_key : str):
 
     return obs_avg
 
-#def average(dirname, 
+def average(avg_key, parallelizer):
+    avg_dirname = parallelizer.dirname + "_merged"
+    avg_path = io.data_dir() + merged_dirname
+    io.check_dir(avg_path)
+
+    for i in range(parallelizer.numfiles):
+        obs_avg = average_obs(parallelizer.get_obs(i), avg_key)
+        obs_avg.to_disk(dirname = avg_dirname)
+

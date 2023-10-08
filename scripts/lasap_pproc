@@ -1,16 +1,79 @@
 #!/bin/sh
 
 mode_usage(){
-  echo "\nUSAGE\n\tlasap_pproc -m|--mode $1 -a|--args \"$2\""
+  echo "\nUSAGE\n\tlasap_pproc [OPTIONS] -m|--mode $1 -a|--args \"$2\""
+  echo "\nAVAILABLE OPTIONS"
+  shift && shift
+  num_options=$#
+  invalid_options=0
+  while [ $# -gt 0 ]; do
+    case $1 in 
+      -p)
+	echo "\t-p|--parallelize <jobid>/<numjobs>"
+	echo "\t\tActivate parallelization assuming <numjobs> independent lasap_pproc jobs are being run, distinguishable only by <jobid>. <jobid> should range from 1 to <numjobs>."
+	shift
+	;;
+      *)
+	invalid_options=$(expr $invalid_options + 1)
+    esac
+  done
+  if [ $num_options -eq $invalid_options ]; then
+    echo "\tnone"
+  fi
+}
+
+check_mode(){
+  avail_modes="merge average"
+  is_avail=0
+  for avail_mode in $avail_modes ; do
+    if [ "$avail_mode" = "$1" ]; then
+      is_avail=1
+    fi
+  done
+  if [ $is_avail -eq 0 ]; then
+    echo "ERROR: mode $1 not recognized!"
+    exit
+  fi
+}
+
+check_available_paralellization(){
+  para_modes="average average_moments" 
+  is_para=0
+  for para_mode in $para_modes ; do
+    if [ "$para_mode" = "$1" ]; then
+      is_para=1
+    fi
+  done
+  if [ $is_para -eq 0 ]; then
+    echo "ERROR: mode $1 is not parallelizable (option -p not available)"
+    exit
+  fi
+}
+
+mode_help(){
+  case $mode in
+    "merge")
+      echo "\nDESCRIPTION\n\tMerge all the data in a subdirectory <dirname> of the data directory, according to matching properties. The merged data is placed in the directory <dirname>_merged"
+      mode_usage $mode "<dirname>"
+      ;;
+    "average")
+      echo "\nDESCRIPTION\n\tAverage data in directory <dirname> with respect to the key <avg_key>. The averaged data is placed in the directory <dirname>_<avg_key>_avg"
+      mode_usage $mode "<dirname> <avg_key>" -p
+      ;;
+  esac
 }
 
 HELP=0
+PARALLELIZE=0
 mode=""
+jobid=0
+numjobs=0
 
 while [ $# -gt 0 ]; do
   case $1 in
     -m|--mode)
       mode="$2"
+      check_mode $mode
       shift && shift
       ;;
     -h|--help)
@@ -19,6 +82,12 @@ while [ $# -gt 0 ]; do
       ;;
     -a|--args)
       args="$2"
+      shift && shift
+      ;;
+    -p|--parallelize)
+      PARALLELIZE=1
+      jobid=$(echo $2 | cut -d "/" -f 1)
+      numjobs=$(echo $2 | cut -d "/" -f 2)
       shift && shift
       ;;
     *)
@@ -32,8 +101,8 @@ done
 
 if [ -z $mode ]; then 
   if [ $HELP -eq 1 ]; then
-    mode_usage "<mode>" "<args>"
-    echo "\nAvailable modes:\n - merge\n - average"
+    mode_usage "<mode>" "<args>" -p
+    echo "\nAVAILABLE MODES\n\tmerge\n\taverage"
     echo "Try 'lasap_pproc -h -m <mode>' to get specific information about mode <mode>"
   else
     echo "ERROR: No arguments parsed"
@@ -41,20 +110,12 @@ if [ -z $mode ]; then
   fi
 else
   if [ $HELP -eq 1 ]; then
-    case $mode in
-      "merge")
-	echo "\nDESCRIPTION\n\tMerge all the data in a subdirectory <dirname> of the data directory, acoording to matching properties. Merged data is placed in the directory <dirname>_merged"
-	mode_usage $mode "<dirname>"
-	;;
-      *)
-	echo "ERROR: mode $mode not recognized!" && exit
-	;;
-    esac
+    mode_help
   else
+    if [ $PARALLELIZE -eq 1 ]; then
+      check_available_paralellization $mode
+      args="$args $jobid $numjobs"
+    fi
     python -c "import lasap.pproc.parse_args" $mode $args
   fi
 fi
-
-#[ ! $# -eq 2 ] && echo "Error: Wrong number of arguments\nExpected lasap_merge <dirname>" && exit
-
-#python -c "from lasap.pproc.merge_daemon import merge_daemon; merge_daemon('$1', $2)"
