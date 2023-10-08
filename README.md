@@ -9,20 +9,6 @@ Currently only Python and Julia are supported.
 
 **Disclamer:** This package is mostly intended for personal use and is not documented. 
 
-<!
-## User dependencies
-
-**Python**
-
-* Numpy
-* Pandas
-* PyArrow
-
-**Julia**
-
-* OrderedCollections
->
-
 ## Installation
 
 Install and uninstall with the provided scripts in the root folder.
