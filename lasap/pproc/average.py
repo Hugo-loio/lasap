@@ -12,7 +12,7 @@ def average_obs(obs : Observable, avg_key : str):
     keys, vals, keynames = obs.get_merged_key_data(avg_key)
 
     n_samples = len(vals[0])
-    print("Found " + str(n_samples) + " samples")
+    print("Found " + str(n_samples) + " samples in observable " + obs.get_name())
     vals_avg = []
     vals_err = []
     for val in vals:
