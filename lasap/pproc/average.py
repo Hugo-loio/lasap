@@ -4,6 +4,9 @@ import sys
 import os
 
 from lasap.containers.observable import Observable
+from lasap.utils.progress import Progress
+from lasap.utils.timer import Timer
+from lasap.utils import io
 
 def average_obs(obs : Observable, avg_key : str):
     keys, vals, keynames = obs.get_merged_key_data(avg_key)
@@ -16,7 +19,7 @@ def average_obs(obs : Observable, avg_key : str):
         vals_avg.append(np.average(val, axis = 0))
         vals_err.append(np.std(val, axis = 0)/np.sqrt(n_samples))
 
-    name = obs.props.loc[0,'name'] + '-' + avg_key + "_avg"
+    name = obs.props.loc[0,'name'] + "_avg(" + avg_key + ")"
     shape = tuple([2] + list(obs.shape))
     props = {avg_key + '_samples' : n_samples}
     obs_avg = Observable(name, shape, keynames, props, inherit_props = obs.props)
@@ -27,11 +30,15 @@ def average_obs(obs : Observable, avg_key : str):
     return obs_avg
 
 def average(avg_key, parallelizer):
-    avg_dirname = parallelizer.dirname + "_merged"
-    avg_path = io.data_dir() + merged_dirname
+    print("avg_key:", avg_key)
+    avg_dirname = parallelizer.dirname + "_avg(" + avg_key + ")"
+    avg_path = io.data_dir() + avg_dirname
     io.check_dir(avg_path)
+
+    timer = Timer()
+    progress = Progress(parallelizer.numfiles, timer)
 
     for i in range(parallelizer.numfiles):
         obs_avg = average_obs(parallelizer.get_obs(i), avg_key)
         obs_avg.to_disk(dirname = avg_dirname)
-
+        progress.print_progress(i)

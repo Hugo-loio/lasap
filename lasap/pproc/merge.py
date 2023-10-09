@@ -5,6 +5,7 @@ import tarfile
 import lasap.containers.observable as observable
 from lasap.utils import io
 from lasap.utils.timer import Timer
+from lasap.utils.progress import Progress
 
 # file is the data file name ending in _data.parquet
 def merge_file(file, merged_names, dirname, merged_dirname):
@@ -46,21 +47,13 @@ def merge(dirname : str):
 
     print("Merging loose files...")
     files = io.ls_match(".*_data\.parquet", path)
-    n = len(files)
-    div = 10  
-    if(n < div):
-        div = n
+    progress = Progress(len(files), timer)
     for i,file in enumerate(files):
         merge_file(file, merged_names, dirname, merged_dirname)
-        e = i+1
-        if(e % int(n/div) == 0 or e == n):
-            print(str(int(100*e/n)) + " % at " + timer.pretty_time())
+        progress.print_progress(i)
 
     tarfiles = io.ls_match(".*\.tar", path)
-    n = len(tarfiles)
-    div = 10  
-    if(n < div):
-        div = n
+    progress = Progress(len(tarfiles), timer)
     print("Merging tar files...")
     for i,tarname in enumerate(tarfiles):
         tar = tarfile.open(path + "/" + tarname)
@@ -78,9 +71,7 @@ def merge(dirname : str):
         if(delete_tar):
             os.remove(path + "/" + tarname)
 
-        e = i+1
-        if(e % int(n/div) == 0 or e == n):
-            print(str(int(100*e/n)) + " % at " + timer.pretty_time())
+        progress.print_progress(i)
 
     if len(os.listdir(path)) == 0:
         os.rmdir(path)

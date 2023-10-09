@@ -61,15 +61,22 @@ class Observable:
     def get_merged_key_data(self, key : str):
         remain_keynames = self.get_keynames()
         remain_keynames.remove(key)
-        gs = self.data.groupby(remain_keynames)
-        grouped_dfs = [gs.get_group(g).drop(columns=[key]) for g in gs.groups]
         keys, vals = [], []
-        num_keys = self.num_keys-1
-        for df in grouped_dfs:
-            keys.append(df.iloc[0,:num_keys].to_numpy())
+        if(len(remain_keynames) > 0):
+            gs = self.data.groupby(remain_keynames)
+            grouped_dfs = [gs.get_group(g).drop(columns=[key]) for g in gs.groups]
+            num_keys = self.num_keys-1
+            for df in grouped_dfs:
+                keys.append(df.iloc[0,:num_keys].to_numpy())
+                vals.append([])
+                for i, row in df.iterrows():
+                    vals[-1].append(row.iloc[num_keys:].to_numpy().reshape(self.shape))
+        else:
+            df = self.data.drop(columns=[key])
+            keys.append([])
             vals.append([])
             for i, row in df.iterrows():
-                vals[-1].append(row.iloc[num_keys:].to_numpy().reshape(self.shape))
+                vals[-1].append(row.iloc[:].to_numpy().reshape(self.shape))
         return keys, vals, remain_keynames
 
     def get_name(self):

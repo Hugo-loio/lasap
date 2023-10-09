@@ -10,11 +10,11 @@ class Parallelizer:
         path = io.data_dir() + dirname
         io.check_dir(path)
         files = io.ls_match(".*_data\.parquet", path)
-        files_per_jobs = int(round(len(files)/numjobs))
+        files_per_job = round(len(files)/numjobs)
         if(jobid == numjobs):
-            self.files = files[(jobid-1)*files_per_jobs:]
+            self.files = files[(jobid-1)*files_per_job:]
         else:
-            self.files = files[(jobid-1)*files_per_jobs,jobid*files_per_jobs]
+            self.files = files[(jobid-1)*files_per_job:jobid*files_per_job]
         self.numfiles = len(self.files)
 
     def get_obs(self, index):
