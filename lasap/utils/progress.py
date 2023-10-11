@@ -9,7 +9,10 @@ class Progress:
         self.div = div
         if(num_procs < self.div):
             self.div = num_procs
-        self.procs_per_fraction = int(num_procs/self.div)
+        if(self.div == 0):
+            self.print_progress = 0
+        else:
+            self.procs_per_fraction = int(num_procs/self.div)
 
 
     def set_progress_divisor(div):
