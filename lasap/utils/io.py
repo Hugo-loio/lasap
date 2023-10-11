@@ -70,11 +70,10 @@ def print_table(dataframe):
     print(tabulate(dataframe, headers = 'keys', tablefmt = 'psql'))
 
 def write_parquet(table, name, dirname = None):
-    check_dir(data_dir())
     path = name
     if(dirname != None):
-        path = check_data_subdir(dirname) + "/" + path
-    pq.write_table(table, path)
+        path = dirname + "/" + path
+    pq.write_table(table, data_dir() + path)
 
 def read_parquet(name, dirname = None):
     path = name

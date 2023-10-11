@@ -1,6 +1,8 @@
+import os
 import pyarrow as pa
 import pandas as pd
 import numpy as np
+
 import lasap.utils.io as io
 
 class Observable:
@@ -89,18 +91,32 @@ class Observable:
         tables['data'] = pa.Table.from_pandas(self.data)
         return tables
 
-    def to_disk(self, name = None, dirname = None):
+    def to_disk(self, dirname, name = None, verbose = False, tarname = None):
+        io.check_dir(io.data_dir())
+        path = io.check_data_subdir(dirname)
         if(name == None):
             name = self.props.loc[0,'name']
         tables = self.to_parquet()
-        io.write_parquet(tables['props'], name + '_props.parquet', dirname) 
-        io.write_parquet(tables['data'], name + '_data.parquet', dirname) 
+        name_props = name + "_props.parquet"
+        name_data = name + "_data.parquet"
+        io.write_parquet(tables['props'], name_props, dirname) 
+        io.write_parquet(tables['data'], name_data, dirname) 
 
-    #TODO
-    """
-    def array_type(type):
+        if(verbose):
+            print("Outputed data files to: " + path + "/" + name)
 
-    def key_types(types): 
+        if(tarname != None):
+            tarpath = path + "/" + tarname + ".tar"
+            # Bundle files in tar with tarname, and remove the separate files
+            os.system('tar -rf ' + tarpath + ' -C ' + path + ' ' + name_props + ' ' + name_data)
+            os.remove(path + "/" + name_props)
+            os.remove(path + "/" + name_data)
+
+#TODO
+"""
+def array_type(type):
+
+def key_types(types): 
     """
 
 def from_pandas(props, data):

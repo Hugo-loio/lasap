@@ -1,9 +1,11 @@
 from lasap.utils.timer import Timer
 
 class Progress:
-    def __init__(self, num_procs, timer : Timer, div = 10):
+    def __init__(self, num_procs, timer : Timer = None, div = 10):
         self.num_procs = num_procs
         self.timer = timer
+        if(timer == None):
+            self.timer = Timer()
         self.div = div
         if(num_procs < self.div):
             self.div = num_procs
