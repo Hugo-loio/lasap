@@ -21,7 +21,7 @@ julia_install(){
 
 pkg=$(dirname "$0")
 
-pip install --user --break-system-packages $pkg
+pip install --user --break-system-packages $pkg || pip install --user $pkg
 
 cp $pkg/scripts/* $HOME/.local/bin #2>/dev/null TODO: find a better solution for this
 

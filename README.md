@@ -15,4 +15,4 @@ Install and uninstall with the provided scripts in the root folder.
 
 ## TODO
 
-* Data visualization script
+* Choose data types for keys and data
