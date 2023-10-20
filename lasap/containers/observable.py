@@ -7,9 +7,10 @@ import lasap.utils.io as io
 
 class Observable:
 
-    def __init__(self, name : str, shape : tuple = (), keynames = [], props : dict = None, **kwargs):
+    def __init__(self, name : str, shape : tuple = (), keynames = [], props : dict = None, complex_data : bool = False, **kwargs):
         props_dict = {}
         props_dict['name'] = name
+        props_dict['complex'] = complex_data
         props_dict['rank'] = len(shape)
         for index,dim in enumerate(shape):
             props_dict['dim' + str(index+1)] = dim
@@ -18,7 +19,12 @@ class Observable:
         # Metadata about the set of arrays
         self.props = pd.DataFrame([props_dict])
 
-        columns = keynames + list(map(str,list(np.arange(1, np.prod(shape)+1))))
+        if(complex_data):
+            datasize = 2*np.prod(shape) 
+        else:
+            datasize = np.prod(shape)
+
+        columns = keynames + list(map(str,list(np.arange(1, datasize+1))))
         #Data dataframe
         self.data = pd.DataFrame(columns = columns)
         #Aux variables
@@ -28,7 +34,7 @@ class Observable:
         # kwargs
         if 'inherit_props' in kwargs:
             df = kwargs['inherit_props']
-            parent_props = df.iloc[:,2+df.loc[0,'rank']:]
+            parent_props = df.iloc[:,3+df.loc[0,'rank']:]
             self.props = pd.concat([self.props,parent_props], axis = 1)
 
     def __eq__(self, other):
@@ -38,14 +44,19 @@ class Observable:
         return self.props.equals(other.props) and self.data.equals(other.data)
 
     def append(self, array, keyvals = [], check_duplicate = False, replace = False):
+        if(self.props.loc[0,'complex']):
+            varray = np.concatenate((array.real.flatten(), array.imag.flatten()), axis = 0)
+        else:
+            varray = array.flatten()
+
         if(check_duplicate):
             for i, row in self.data.iterrows():
                 if(np.array_equal(row.iloc[:self.num_keys].to_numpy(),keyvals)):
                     if(replace):
-                        self.data.iloc[i,self.num_keys:] = array.flatten()
+                        self.data.iloc[i,self.num_keys:] = varray
                         return 1
                     return 2
-        row = np.concatenate((keyvals, array.flatten()))
+        row = np.concatenate((keyvals, varray))
         self.data.loc[len(self.data)] = row
         return 0
 
@@ -60,6 +71,14 @@ class Observable:
     def get_keynames(self):
         return self.data.columns.values.tolist()[:self.num_keys]
 
+    def __reshape(self, row_array):
+        if(self.props.loc[0, 'complex']):
+            half = int(len(row_array)/2)
+            complex_array = row_array[:half] + 1j*row_array[half:]
+            return complex_array.reshape(self.shape)
+        else:
+            return row_array.reshape(self.shape)
+
     def get_merged_key_data(self, key : str):
         remain_keynames = self.get_keynames()
         remain_keynames.remove(key)
@@ -72,14 +91,20 @@ class Observable:
                 keys.append(df.iloc[0,:num_keys].to_numpy())
                 vals.append([])
                 for i, row in df.iterrows():
-                    vals[-1].append(row.iloc[num_keys:].to_numpy().reshape(self.shape))
+                    vals[-1].append(self.__reshape(row.iloc[num_keys:].to_numpy()))
         else:
             df = self.data.drop(columns=[key])
             keys.append([])
             vals.append([])
             for i, row in df.iterrows():
-                vals[-1].append(row.iloc[:].to_numpy().reshape(self.shape))
+                vals[-1].append(self.__reshape(row.iloc[:].to_numpy()))
         return keys, vals, remain_keynames
+
+    def to_numpy(self):
+        keys = self.data.iloc[:,:self.num_keys].to_numpy()
+        array = self.data.iloc[:,self.num_keys:].to_numpy()
+        array_reshape = np.array([self.__reshape(row) for row in array])
+        return keys, array_reshape
 
     def get_name(self):
         return self.props.loc[0,'name']

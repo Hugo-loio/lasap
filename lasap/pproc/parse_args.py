@@ -35,3 +35,13 @@ match mode:
             jobid = int(sys.argv[4])
             numjobs = int(sys.argv[5])
         pproc.average.average(avg_key, Parallelizer(dirname, jobid, numjobs))
+    case "kron_moments":
+        argc = check_argc(6,8)
+        dirname = sys.argv[2]
+        avg_key = sys.argv[3]
+        num_moments = int(sys.argv[4])
+        mem_avail = int(sys.argv[5])
+        if(argc == 8):
+            jobid = int(sys.argv[6])
+            numjobs = int(sys.argv[7])
+        pproc.kron_moments.kron_moments(avg_key, num_moments, mem_avail, Parallelizer(dirname, jobid, numjobs))

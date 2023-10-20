@@ -11,10 +11,12 @@ struct Observable
     function Observable(
             name::String, shape::Tuple{Vararg{Integer}}, 
             keynames::Vector{String}=Vector{String}([]), 
-            extraprops::OrderedDict=OrderedDict()
+            extraprops::OrderedDict=OrderedDict(),
+            complex::Bool=false
         )
         props_dict = OrderedDict()
         props_dict["name"] = name
+        props_dict["complex"] = complex
         props_dict["rank"] = length(shape)
         for (index,dim) in enumerate(shape)
             props_dict["dim" * string(index)] = dim
@@ -25,29 +27,36 @@ struct Observable
         # Properties dataframe
         props = DataFrame(props_dict)
 
-        columns = vcat(keynames, [string(x) for x in 1:prod(shape)])
+        complex ? datasize = 2*prod(shape) : datasize = prod(shape)
+        columns = vcat(keynames, [string(x) for x in 1:datasize])
         # Data dataframe
         data = DataFrame([Symbol(x) => Float64[] for x in columns])
         new(props, data, length(keynames))
     end
 end
 
-# Attention! Arrays in julia are collumn major but in python they are row major! You might need to reorder the dimensions before appending (which automatically flattens the array)
+# Attention! Arrays in julia are column major but in python they are row major! You might need to reorder the dimensions before appending (which automatically flattens the array)
 function append!(obs::Observable, array::Array, keyvals::Vector; 
         check_duplicate::Bool=false, replace::Bool=false)
+    if(obs.props[1, "complex"])
+        varray = vcat(vec(real(array)), vec(imag(array)))
+    else
+        varray = vec(array)
+    end
+
     if(check_duplicate)
         #for (i,row) in enumerate(eachrow(obs.data))
         for row in eachrow(obs.data)
             if(all(Array(row[1:obs.numkeys]) .== keyvals))
                 if(replace)
-                    row[obs.numkeys+1:end] = vec(array)
+                    row[obs.numkeys+1:end] = varray
                     return 1
                 end
                 return 2
             end
         end
     end
-    push!(obs.data, vcat(keyvals, vec(array)))
+    push!(obs.data, vcat(keyvals, varray))
     return 0
 end
 

@@ -5,6 +5,9 @@ import os
 
 import lasap.utils.miscellaneous as misc
 from lasap.containers.observable import Observable
+from lasap.utils.progress import Progress
+from lasap.utils.timer import Timer
+from lasap.utils import io
 
 def average_std_k_moment(array, k):
     if(k == 1):
@@ -36,15 +39,23 @@ def average_std_k_moment(array, k):
     return [avg_array.reshape(f_shape), std_array.reshape(f_shape)]
 
 
-def kron_moments(obs : Observable, avg_key : str, num_moments : int, mem_avail : float):
-    keys, vals = obs.get_merged_key_contents(avg_key)
+def kron_moments_obs(obs : Observable, avg_key : str, num_moments : int, mem_avail : float):
+    keys, vals, keynames= obs.get_merged_key_data(avg_key)
 
     n_samples = len(vals[0])
+    print("Found " + str(n_samples) + " samples in observable " + obs.get_name())
 
-    obs_avg = observable.Observable(obs.props)
-    obs_avg.props['name'] = obs_avg.props['name'] + avg_key + "_moms"
-    obs_avg.props[avg_key + '_samples'] = n_samples
-    obs_avg.props[avg_key + '_num_moments'] = num_moments
+    moms_obs = []
+
+    for k in range(1, num_moments+1):
+        name = obs.props.loc[0,'name'] + "_moms(" + avg_key + ")" + "_k" + str(k)
+        shape = [2] + list(obs.shape)
+        shape[-1] = int(shape[-1]**k)
+        shape[-2] = int(shape[-2]**k)
+        shape = tuple(shape)
+        complex_data = obs.props.loc[0,'complex']
+        props = {avg_key + '_samples' : n_samples, 'k' : k}
+        moms_obs.append(Observable(name, shape, keynames, props, complex_data, inherit_props = obs.props))
 
     sizes = np.zeros(len(vals))
     for i,val in enumerate(vals):
@@ -57,20 +68,28 @@ def kron_moments(obs : Observable, avg_key : str, num_moments : int, mem_avail :
             val = np.array(val)
             val1 = np.copy(val)
             for k in range(1, num_moments+1):
-                key = keys[i].copy()
-                key['k'] = k
-                #print("Job_id", job_id, key)
-                obs_avg.append(key, [np.average(val, axis = 0), np.std(val, axis = 0)/np.sqrt(n_samples)])
+                moms_obs[k-1].append(np.array([np.average(val, axis = 0), np.std(val, axis = 0)/np.sqrt(n_samples)]), keys[i])
                 if(k != num_moments):
                     val = misc.kron_last_axes(val, val1)
     else:
         for i,val in enumerate(vals):
             val = np.array(val)
             for k in range(1, num_moments+1):
-                key = keys[i].copy()
-                key['k'] = k
-                #print("Job_id", job_id, key)
-                obs_avg.append(key, average_std_k_moment(val, k))
-                obs_avg.contents[-1][1] /= np.sqrt(n_samples)
+                res = average_std_k_moment(val, k)
+                moms_obs[k-1].append(np.array([res[0], res[1]/np.sqrt(n_samples)]), keys[i])
 
-    return obs_avg
+    return moms_obs
+
+def kron_moments(avg_key, num_moments, mem_avail, parallelizer):
+    print("avg_key:", avg_key)
+    new_dirname = parallelizer.dirname + "_moms(" + avg_key + ")"
+    new_path = io.data_dir() + new_dirname
+    io.check_dir(new_path)
+
+    timer = Timer()
+    progress = Progress(parallelizer.numfiles, timer)
+
+    for i in range(parallelizer.numfiles):
+        moms_obs = kron_moments_obs(parallelizer.get_obs(i), avg_key, num_moments, mem_avail)
+        [obs.to_disk(dirname = new_dirname) for obs in moms_obs]
+        progress.print_progress(i)

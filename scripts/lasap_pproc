@@ -23,7 +23,6 @@ mode_usage(){
 }
 
 check_mode(){
-  avail_modes="merge average"
   is_avail=0
   for avail_mode in $avail_modes ; do
     if [ "$avail_mode" = "$1" ]; then
@@ -37,7 +36,7 @@ check_mode(){
 }
 
 check_available_paralellization(){
-  para_modes="average average_moments" 
+  para_modes="average kron_moments" 
   is_para=0
   for para_mode in $para_modes ; do
     if [ "$para_mode" = "$1" ]; then
@@ -57,11 +56,17 @@ mode_help(){
       mode_usage $mode "<dirname>"
       ;;
     "average")
-      echo "\nDESCRIPTION\n\tAverage data in directory <dirname> with respect to the key <avg_key>. The averaged data is placed in the directory <dirname>_<avg_key>_avg"
+      echo "\nDESCRIPTION\n\tAverage data in directory <dirname> with respect to the key <avg_key>. The averaged data is placed in the directory <dirname>_avg(<avg_key>)"
       mode_usage $mode "<dirname> <avg_key>" -p
+      ;;
+    "kron_moments")
+      echo "\nDESCRIPTION\n\tCompute the average of the Kronecker power of the data in directory <dirname> with respect to the key <avg_key>, until power <num_moments>. The averaged data is placed in the directory <dirname>_avg(<avg_key>). It is mandatory to choose the amount of available memory <mem_avail> for the program."
+      mode_usage $mode "<dirname> <avg_key> <num_moments> <mem_avail>" -p
       ;;
   esac
 }
+
+avail_modes="merge average kron_moments"
 
 HELP=0
 PARALLELIZE=0
@@ -102,7 +107,10 @@ done
 if [ -z $mode ]; then 
   if [ $HELP -eq 1 ]; then
     mode_usage "<mode>" "<args>" -p
-    echo "\nAVAILABLE MODES\n\tmerge\n\taverage"
+    echo "\nAVAILABLE MODES"
+    for avail_mode in $avail_modes ; do
+      echo "\t$avail_mode"
+    done
     echo "Try 'lasap_pproc -h -m <mode>' to get specific information about mode <mode>"
   else
     echo "ERROR: No arguments parsed"

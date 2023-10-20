@@ -22,7 +22,8 @@ def average_obs(obs : Observable, avg_key : str):
     name = obs.props.loc[0,'name'] + "_avg(" + avg_key + ")"
     shape = tuple([2] + list(obs.shape))
     props = {avg_key + '_samples' : n_samples}
-    obs_avg = Observable(name, shape, keynames, props, inherit_props = obs.props)
+    complex_data = obs.props.loc[0,'complex']
+    obs_avg = Observable(name, shape, keynames, props, complex_data, inherit_props = obs.props)
 
     for i in range(len(vals_avg)):
         obs_avg.append(np.array([vals_avg[i], vals_err[i]]), keys[i])
