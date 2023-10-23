@@ -21,7 +21,8 @@ dependencies = [
   "tabulate",
   "pandas",
   "pyarrow",
-  "numpy"
+  "numpy",
+  "scipy"
 ]
 
 [project.urls]
