@@ -18,7 +18,10 @@ classifiers = [
 ]
 
 dependencies = [
-  "tabulate"
+  "tabulate",
+  "pandas",
+  "pyarrow",
+  "numpy"
 ]
 
 [project.urls]
