@@ -160,6 +160,13 @@ def from_parquet(props, data):
     return from_pandas(props.to_pandas(), data.to_pandas())
 
 def from_disk(name, dirname = None):
-    props = io.read_parquet(name + '_props.parquet', dirname) 
-    data = io.read_parquet(name + '_data.parquet', dirname) 
-    return from_parquet(props, data)
+    try:
+        props = io.read_parquet(name + '_props.parquet', dirname) 
+        data = io.read_parquet(name + '_data.parquet', dirname) 
+        return from_parquet(props, data)
+    except OSError:
+        print("Reading with pyarrow failed, reading with pandas instead...")
+        props = io.read_parquet_pandas(name + '_props.parquet', dirname) 
+        data = io.read_parquet_pandas(name + '_data.parquet', dirname) 
+        return from_pandas(props, data)
+    

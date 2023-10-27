@@ -5,6 +5,8 @@ import re
 import numpy as np
 import pickle
 import pyarrow.parquet as pq
+import pandas as pd
+import psutil
 
 def cwd_path():
     return os.getcwd()
@@ -79,4 +81,17 @@ def read_parquet(name, dirname = None):
     path = name
     if(dirname != None):
         path = dirname + "/" + path
-    return pq.read_table(data_dir() + path)
+    try:
+        return pq.read_table(data_dir() + path)
+    except OSError:
+        avail_mem = min(psutil.virtual_memory()[1], 2**31-1)
+        return pq.read_table(data_dir() + path,
+                             thrift_string_size_limit = avail_mem,
+                             thrift_container_size_limit = avail_mem
+                             )
+
+def read_parquet_pandas(name, dirname = None):
+    path = name
+    if(dirname != None):
+        path = dirname + "/" + path
+    return pd.read_parquet(data_dir() + path, engine = 'fastparquet')

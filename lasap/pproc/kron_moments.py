@@ -20,8 +20,8 @@ def average_std_k_moment(array, k):
     f_shape[-2] = int(f_shape[-2]**k)
     mid_dim = int(np.prod(f_shape[:-2]))
 
-    avg_array = np.zeros((mid_dim, f_shape[-2], f_shape[-1]))
-    std_array = np.zeros((mid_dim, f_shape[-2], f_shape[-1]))
+    avg_array = np.zeros((mid_dim, f_shape[-2], f_shape[-1]), dtype = array.dtype)
+    std_array = np.zeros((mid_dim, f_shape[-2], f_shape[-1]), dtype = array.dtype)
     array = array.reshape((o_shape[0], mid_dim, o_shape[-2], o_shape[-1])) 
     
     for i,avg in enumerate(avg_array):

@@ -22,7 +22,8 @@ dependencies = [
   "pandas",
   "pyarrow",
   "numpy",
-  "scipy"
+  "scipy",
+  "fastparquet"
 ]
 
 [project.urls]
