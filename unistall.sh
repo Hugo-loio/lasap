@@ -2,7 +2,7 @@
 
 pkg=$(dirname "$0")
 
-pip uninstall --break-system-packages lasap
+pip uninstall --break-system-packages lasap || pip uninstall lasap
 
 rm $HOME/.local/bin/lasap_*
 
