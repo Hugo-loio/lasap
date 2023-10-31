@@ -89,7 +89,10 @@ def kron_moments(avg_key, num_moments, mem_avail, parallelizer):
     timer = Timer()
     progress = Progress(parallelizer.numfiles, timer)
 
+    print("Processing", parallelizer.numfiles, "files...")
     for i in range(parallelizer.numfiles):
         moms_obs = kron_moments_obs(parallelizer.get_obs(i), avg_key, num_moments, mem_avail)
         [obs.to_disk(dirname = new_dirname) for obs in moms_obs]
         progress.print_progress(i)
+
+    print("Finished kron_moments", parallelizer.jobid)
