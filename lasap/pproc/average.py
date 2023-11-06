@@ -1,5 +1,4 @@
 import numpy as np
-import pickle
 import sys
 import os
 
@@ -30,7 +29,7 @@ def average_obs(obs : Observable, avg_key : str):
 
     return obs_avg
 
-def average(avg_key, parallelizer):
+def average(avg_key, parallelizer, disk_format):
     print("avg_key:", avg_key)
     avg_dirname = parallelizer.dirname + "_avg(" + avg_key + ")"
     avg_path = io.data_dir() + avg_dirname
@@ -41,5 +40,6 @@ def average(avg_key, parallelizer):
 
     for i in range(parallelizer.numfiles):
         obs_avg = average_obs(parallelizer.get_obs(i), avg_key)
+        obs_avg.set_disk_format(disk_format)
         obs_avg.to_disk(dirname = avg_dirname)
         progress.print_progress(i)

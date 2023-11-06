@@ -1,0 +1,5 @@
+Option 1:
+Option 1 failed with the following error:
+ Could not open Parquet input source 'test.parquet': Couldn't deserialize thrift: TProtocolException: Exceeded size limit
+
+Option 2: read column by column

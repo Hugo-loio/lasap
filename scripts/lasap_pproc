@@ -13,6 +13,15 @@ mode_usage(){
 	echo "\t\tActivate parallelization assuming <numjobs> independent lasap_pproc jobs are being run, distinguishable only by <jobid>. <jobid> should range from 1 to <numjobs>."
 	shift
 	;;
+      -f) 
+	echo "\t-f|--disk_format <disk_format>"
+	echo "\t\tSet the format of the output files, 'csv' by default. The currently supported file formats are"
+	avail_formats="csv parquet"
+	for format in $avail_formats; do
+	  echo "\t\t\t$format"
+	done
+	shift
+	;;
       *)
 	invalid_options=$(expr $invalid_options + 1)
     esac
@@ -52,16 +61,16 @@ check_available_paralellization(){
 mode_help(){
   case $mode in
     "merge")
-      echo "\nDESCRIPTION\n\tMerge all the data in a subdirectory <dirname> of the data directory, according to matching properties. The merged data is placed in the directory <dirname>_merged"
-      mode_usage $mode "<dirname>"
+      echo "\nDESCRIPTION\n\tMerge all the data in a subdirectory <dirname> of the data directory, according to matching properties. The merged data is placed in the directory <dirname>_merged."
+      mode_usage $mode "<dirname>" -f 
       ;;
     "average")
       echo "\nDESCRIPTION\n\tAverage data in directory <dirname> with respect to the key <avg_key>. The averaged data is placed in the directory <dirname>_avg(<avg_key>)"
-      mode_usage $mode "<dirname> <avg_key>" -p
+      mode_usage $mode "<dirname> <avg_key>" -p -f 
       ;;
     "kron_moments")
       echo "\nDESCRIPTION\n\tCompute the average of the Kronecker power of the data in directory <dirname> with respect to the key <avg_key>, until power <num_moments>. The averaged data is placed in the directory <dirname>_avg(<avg_key>). It is mandatory to choose the amount of available memory <mem_avail> for the program."
-      mode_usage $mode "<dirname> <avg_key> <num_moments> <mem_avail>" -p
+      mode_usage $mode "<dirname> <avg_key> <num_moments> <mem_avail>" -p -f
       ;;
   esac
 }
@@ -73,6 +82,7 @@ PARALLELIZE=0
 mode=""
 jobid=0
 numjobs=0
+disk_format='csv'
 
 while [ $# -gt 0 ]; do
   case $1 in
@@ -95,6 +105,10 @@ while [ $# -gt 0 ]; do
       numjobs=$(echo $2 | cut -d "/" -f 2)
       shift && shift
       ;;
+    -f|--disk_format)
+      disk_format="$2"
+      shift && shift
+      ;;
     *)
       #OTHER_ARGUMENTS+=("$1")
       echo "ERROR: Argument $1 not recognized!" 
@@ -106,7 +120,7 @@ done
 
 if [ -z $mode ]; then 
   if [ $HELP -eq 1 ]; then
-    mode_usage "<mode>" "<args>" -p
+    mode_usage "<mode>" "<args>" -p -f 
     echo "\nAVAILABLE MODES"
     for avail_mode in $avail_modes ; do
       echo "\t$avail_mode"
@@ -124,6 +138,6 @@ else
       check_available_paralellization $mode
       args="$args $jobid $numjobs"
     fi
-    python -c "import lasap.pproc.parse_args" $mode $args
+    python -c "import lasap.pproc.parse_args" $mode $disk_format $args
   fi
 fi

@@ -1,6 +1,6 @@
 module LasapInterface
 
-using DataFrames, OrderedCollections, Parquet2
+using DataFrames, OrderedCollections, Parquet2, CSV
 
 export Observable, append!, todisk
 
@@ -84,7 +84,7 @@ function check_dir(dir::String)
 end
 
 function todisk(obs::Observable, dirname::String;
-        name::String="", verbose::Bool=false, tarname::String="")
+        name::String="", verbose::Bool=false, tarname::String="", diskformat::String="csv")
     path = data_dir()
     check_dir(path)
     path = data_dir() * dirname
@@ -92,12 +92,17 @@ function todisk(obs::Observable, dirname::String;
     if(length(name) == 0)
         name = obs.props[1,"name"]
     end
-    name_props = name * "_props.parquet"
-    name_data = name * "_data.parquet"
+    name_props = name * "_props." * diskformat
+    name_data = name * "_data." * diskformat
     path_props = path * "/" * name_props
     path_data = path * "/" * name_data
-    Parquet2.writefile(path_props, obs.props)
-    Parquet2.writefile(path_data, obs.data)
+    if(diskformat == "parquet")
+        Parquet2.writefile(path_props, obs.props)
+        Parquet2.writefile(path_data, obs.data)
+    elseif(diskformat == "csv")
+        CSV.write(path_props, obs.props)
+        CSV.write(path_data, obs.data)
+    end
 
     if(verbose)
         println("Outputed data files to: " * path * "/" * name)

@@ -3,17 +3,15 @@ import os
 import glob
 import re
 import numpy as np
-import pickle
 import pyarrow.parquet as pq
 import pandas as pd
 import psutil
 
+from lasap.utils.constants import SUPPORTED_DISK_FORMATS
+
 def cwd_path():
     return os.getcwd()
 #return file_path[:file_path.rfind("/")]
-
-def plot_dir():
-    return cwd_path() + "/plots/"
 
 def data_dir():
     custom_path = os.environ.get('LASAP_DATA_DIR')
@@ -31,25 +29,8 @@ def check_dir(path):
         except FileExistsError:
             print(path + " was created by another process")
 
-def check_plot_dir():
-    if(not os.path.isdir(cwd_path() + "/plots")):
-        os.mkdir(cwd_path() + "/plots")
-
 def remove_data_file(file_name):
     os.remove(data_dir() + file_name)
-
-def save_pickle(pickle_name, obj):
-    pickle_path = data_dir() + pickle_name
-    with open(pickle_path, 'wb') as pickle_file:
-        pickle.dump(obj, pickle_file)
-
-def load_pickle(pickle_name):
-    pickle_path = data_dir() + pickle_name
-    try:
-        with open(pickle_path, 'rb') as pickle_file:
-            return pickle.load( pickle_file)
-    except EOFError:
-        return None
 
 def check_data_subdir(name):
     path = data_dir() + name
@@ -60,6 +41,12 @@ def ls_match(match, folder_path = None):
     if folder_path == None:
         folder_path = data_dir()
     return [name for name in os.listdir(folder_path) if re.match(match, name)]
+
+def ls_data_files(folder_path):
+    res = []
+    for ext in SUPPORTED_DISK_FORMATS:
+        res += ls_match(".*_data\." + ext , folder_path)
+    return res
 
 def rm_data(name):
     os.remove(data_dir() + name)
@@ -84,8 +71,10 @@ def read_parquet(name, dirname = None):
     try:
         return pq.read_table(data_dir() + path)
     except OSError:
-        avail_mem = min(psutil.virtual_memory()[1], 2**31-1)
+        avail_mem = min(0.8*psutil.virtual_memory()[1], 2**31-1)
         return pq.read_table(data_dir() + path,
+                             #use_threads = False,
+                             #memory_map = True,
                              thrift_string_size_limit = avail_mem,
                              thrift_container_size_limit = avail_mem
                              )
@@ -95,3 +84,9 @@ def read_parquet_pandas(name, dirname = None):
     if(dirname != None):
         path = dirname + "/" + path
     return pd.read_parquet(data_dir() + path, engine = 'fastparquet')
+
+def read_csv_pandas(name, dirname = None):
+    path = name
+    if(dirname != None):
+        path = dirname + "/" + path
+    return pd.read_csv(data_dir() + path, index_col = [0])

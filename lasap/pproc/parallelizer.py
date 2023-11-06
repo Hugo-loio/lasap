@@ -11,7 +11,7 @@ class Parallelizer:
 
         path = io.data_dir() + dirname
         io.check_dir(path)
-        files = io.ls_match(".*_data\.parquet", path)
+        files = io.ls_data_files(path)
         files_per_job = math.ceil(len(files)/numjobs)
         print(files_per_job)
         if(jobid > len(files)):
@@ -25,4 +25,5 @@ class Parallelizer:
             self.numfiles = len(self.files)
 
     def get_obs(self, index):
-        return observable.from_disk(self.files[index][:-13], self.dirname)
+        file = self.files[index]
+        return observable.from_disk(file[:file.rfind('_data')], self.dirname)

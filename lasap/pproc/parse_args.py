@@ -19,29 +19,30 @@ def check_argc(*argcs):
     return right_argc
 
 mode = sys.argv[1]
+disk_format = sys.argv[2]
 jobid = 1
 numjobs = 1
 
 match mode:
     case "merge":
-        check_argc(3)
-        dirname = sys.argv[2]
-        pproc.merge.merge(dirname)
+        argc = check_argc(4)
+        dirname = sys.argv[3]
+        pproc.merge.merge(dirname, disk_format)
     case "average":
-        argc = check_argc(4,6)
-        dirname = sys.argv[2]
-        avg_key = sys.argv[3]
-        if(argc == 6):
-            jobid = int(sys.argv[4])
-            numjobs = int(sys.argv[5])
-        pproc.average.average(avg_key, Parallelizer(dirname, jobid, numjobs))
+        argc = check_argc(5,7)
+        dirname = sys.argv[3]
+        avg_key = sys.argv[4]
+        if(argc == 7):
+            jobid = int(sys.argv[5])
+            numjobs = int(sys.argv[6])
+        pproc.average.average(avg_key, Parallelizer(dirname, jobid, numjobs), disk_format)
     case "kron_moments":
-        argc = check_argc(6,8)
-        dirname = sys.argv[2]
-        avg_key = sys.argv[3]
-        num_moments = int(sys.argv[4])
-        mem_avail = int(sys.argv[5])
+        argc = check_argc(7,9)
+        dirname = sys.argv[3]
+        avg_key = sys.argv[4]
+        num_moments = int(sys.argv[5])
+        mem_avail = int(sys.argv[6])
         if(argc == 8):
-            jobid = int(sys.argv[6])
-            numjobs = int(sys.argv[7])
-        pproc.kron_moments.kron_moments(avg_key, num_moments, mem_avail, Parallelizer(dirname, jobid, numjobs))
+            jobid = int(sys.argv[7])
+            numjobs = int(sys.argv[8])
+        pproc.kron_moments.kron_moments(avg_key, num_moments, mem_avail, Parallelizer(dirname, jobid, numjobs), disk_format)

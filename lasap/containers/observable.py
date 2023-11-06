@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 
 import lasap.utils.io as io
+from lasap.utils.constants import SUPPORTED_DISK_FORMATS
 
 class Observable:
 
@@ -30,6 +31,7 @@ class Observable:
         #Aux variables
         self.shape = shape
         self.num_keys = len(keynames)
+        self.disk_format = 'csv'
 
         # kwargs
         if 'inherit_props' in kwargs:
@@ -37,11 +39,21 @@ class Observable:
             parent_props = df.iloc[:,3+df.loc[0,'rank']:]
             self.props = pd.concat([self.props,parent_props], axis = 1)
 
+        if 'disk_format' in kwargs:
+            self.set_disk_format(kwargs['disk_format'])
+
     def __eq__(self, other):
         if not isinstance(other, Observable):
             return NotImplemented
 
         return self.props.equals(other.props) and self.data.equals(other.data)
+
+    def set_disk_format(self, disk_format):
+        if(disk_format in SUPPORTED_DISK_FORMATS):
+            self.disk_format = disk_format
+        else:
+            self.disk_format = 'csv'
+            print("Warning: disk format", disk_format, "not supported, using csv instead.")
 
     def append(self, array, keyvals = [], check_duplicate = False, replace = False):
         if(self.props.loc[0,'complex']):
@@ -121,11 +133,17 @@ class Observable:
         path = io.check_data_subdir(dirname)
         if(name == None):
             name = self.props.loc[0,'name']
-        tables = self.to_parquet()
-        name_props = name + "_props.parquet"
-        name_data = name + "_data.parquet"
-        io.write_parquet(tables['props'], name_props, dirname) 
-        io.write_parquet(tables['data'], name_data, dirname) 
+        name_props = name + "_props." + self.disk_format
+        name_data = name + "_data." + self.disk_format
+
+        match self.disk_format:
+            case 'parquet':
+                tables = self.to_parquet()
+                io.write_parquet(tables['props'], name_props, dirname) 
+                io.write_parquet(tables['data'], name_data, dirname) 
+            case 'csv':
+                self.props.to_csv(path + "/" + name_props)
+                self.data.to_csv(path + "/" + name_data)
 
         if(verbose):
             print("Outputed data files to: " + path + "/" + name)
@@ -160,13 +178,29 @@ def from_parquet(props, data):
     return from_pandas(props.to_pandas(), data.to_pandas())
 
 def from_disk(name, dirname = None):
-    try:
-        props = io.read_parquet(name + '_props.parquet', dirname) 
-        data = io.read_parquet(name + '_data.parquet', dirname) 
-        return from_parquet(props, data)
-    except OSError:
-        print("Reading with pyarrow failed, reading with pandas instead...")
-        props = io.read_parquet_pandas(name + '_props.parquet', dirname) 
-        data = io.read_parquet_pandas(name + '_data.parquet', dirname) 
-        return from_pandas(props, data)
-    
+    found_file = False
+    for disk_format in SUPPORTED_DISK_FORMATS:
+        if(io.check_file(dirname + "/" + name + '_props.' + disk_format)):
+            found_file = True
+            break
+    if(not found_file):
+        raise FileNotFoundError('No files corresponding to ' + io.data_dir() + dirname + "/" + name + "...")
+    match disk_format:
+        case 'parquet':
+            try:
+                props = io.read_parquet(name + '_props.parquet', dirname) 
+                data = io.read_parquet(name + '_data.parquet', dirname) 
+                obs =  from_parquet(props, data)
+            except OSError:
+                print("Reading with pyarrow failed, reading with pandas instead...")
+                props = io.read_parquet_pandas(name + '_props.parquet', dirname) 
+                data = io.read_parquet_pandas(name + '_data.parquet', dirname) 
+                obs = from_pandas(props, data)
+            obs.set_disk_format('parquet')
+        case 'csv':
+            props = io.read_csv_pandas(name + '_props.csv', dirname) 
+            data = io.read_csv_pandas(name + '_data.csv', dirname) 
+            obs = from_pandas(props, data)
+            obs.set_disk_format('csv')
+    return obs
+

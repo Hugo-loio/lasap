@@ -1,5 +1,4 @@
 import numpy as np
-import pickle
 import sys
 import os
 
@@ -80,7 +79,7 @@ def kron_moments_obs(obs : Observable, avg_key : str, num_moments : int, mem_ava
 
     return moms_obs
 
-def kron_moments(avg_key, num_moments, mem_avail, parallelizer):
+def kron_moments(avg_key, num_moments, mem_avail, parallelizer, disk_format):
     print("avg_key:", avg_key)
     new_dirname = parallelizer.dirname + "_moms(" + avg_key + ")"
     new_path = io.data_dir() + new_dirname
@@ -92,7 +91,9 @@ def kron_moments(avg_key, num_moments, mem_avail, parallelizer):
     print("Processing", parallelizer.numfiles, "files...")
     for i in range(parallelizer.numfiles):
         moms_obs = kron_moments_obs(parallelizer.get_obs(i), avg_key, num_moments, mem_avail)
-        [obs.to_disk(dirname = new_dirname) for obs in moms_obs]
+        for obs in moms_obs:
+            obs.set_disk_format(disk_format)
+            obs.to_disk(dirname = new_dirname)
         progress.print_progress(i)
 
     print("Finished kron_moments", parallelizer.jobid)
