@@ -101,4 +101,4 @@ def kron_moments_partial(avg_key, num_moments, mem_avail, n_samples, parallelize
             obs.to_disk(dirname = new_dirname)
         progress.print_progress(i)
 
-    print("Finished kron_moments", parallelizer.jobid)
+    print("Finished kron_moments_partial", parallelizer.jobid)
