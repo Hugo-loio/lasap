@@ -110,7 +110,7 @@ class Observable:
             vals.append([])
             for i, row in df.iterrows():
                 vals[-1].append(self.__reshape(row.iloc[:].to_numpy()))
-        return keys, vals, remain_keynames
+        return keys, np.array(vals), remain_keynames
 
     def to_numpy(self):
         keys = self.data.iloc[:,:self.num_keys].to_numpy()

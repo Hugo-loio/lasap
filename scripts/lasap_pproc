@@ -45,7 +45,7 @@ check_mode(){
 }
 
 check_available_paralellization(){
-  para_modes="average kron_moments" 
+  para_modes="average kron_moments kron_moments_partial" 
   is_para=0
   for para_mode in $para_modes ; do
     if [ "$para_mode" = "$1" ]; then
@@ -72,10 +72,14 @@ mode_help(){
       echo "\nDESCRIPTION\n\tCompute the average of the Kronecker power of the data in directory <dirname> with respect to the key <avg_key>, until power <num_moments>. The averaged data is placed in the directory <dirname>_avg(<avg_key>). It is mandatory to choose the amount of available memory <mem_avail> for the program."
       mode_usage $mode "<dirname> <avg_key> <num_moments> <mem_avail>" -p -f
       ;;
+    "kron_moments_partial")
+      echo "\nDESCRIPTION\n\tCompute the average of the Kronecker power of the data in directory <dirname> until power <num_moments>, with respect to the key <avg_key> and a partial dataset of <n_samples> samples. The averaged data is placed in the directory <dirname>_avg(<avg_key>). It is mandatory to choose the amount of available memory <mem_avail> for the program."
+      mode_usage $mode "<dirname> <avg_key> <num_moments> <mem_avail> <n_samples>" -p -f
+      ;;
   esac
 }
 
-avail_modes="merge average kron_moments"
+avail_modes="merge average kron_moments kron_moments_partial"
 
 HELP=0
 PARALLELIZE=0

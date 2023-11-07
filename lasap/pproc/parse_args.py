@@ -46,3 +46,14 @@ match mode:
             jobid = int(sys.argv[7])
             numjobs = int(sys.argv[8])
         pproc.kron_moments.kron_moments(avg_key, num_moments, mem_avail, Parallelizer(dirname, jobid, numjobs), disk_format)
+    case "kron_moments_partial":
+        argc = check_argc(8,10)
+        dirname = sys.argv[3]
+        avg_key = sys.argv[4]
+        num_moments = int(sys.argv[5])
+        mem_avail = int(sys.argv[6])
+        n_samples = int(sys.argv[7])
+        if(argc == 10):
+            jobid = int(sys.argv[8])
+            numjobs = int(sys.argv[9])
+        pproc.kron_moments_partial.kron_moments_partial(avg_key, num_moments, mem_avail, n_samples, Parallelizer(dirname, jobid, numjobs), disk_format)
