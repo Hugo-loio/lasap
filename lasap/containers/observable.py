@@ -142,8 +142,8 @@ class Observable:
                 io.write_parquet(tables['props'], name_props, dirname) 
                 io.write_parquet(tables['data'], name_data, dirname) 
             case 'csv':
-                self.props.to_csv(path + "/" + name_props)
-                self.data.to_csv(path + "/" + name_data)
+                self.props.to_csv(path + "/" + name_props, index = False)
+                self.data.to_csv(path + "/" + name_data, index = False)
 
         if(verbose):
             print("Outputed data files to: " + path + "/" + name)

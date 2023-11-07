@@ -89,4 +89,4 @@ def read_csv_pandas(name, dirname = None):
     path = name
     if(dirname != None):
         path = dirname + "/" + path
-    return pd.read_csv(data_dir() + path, index_col = [0])
+    return pd.read_csv(data_dir() + path)
