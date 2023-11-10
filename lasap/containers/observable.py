@@ -25,7 +25,7 @@ class Observable:
         else:
             datasize = np.prod(shape)
 
-        columns = keynames + list(map(str,list(np.arange(1, datasize+1))))
+        columns = keynames + list(map(str,list(np.arange(1, datasize+1, dtype=int))))
         #Data dataframe
         self.data = pd.DataFrame(columns = columns)
         #Aux variables

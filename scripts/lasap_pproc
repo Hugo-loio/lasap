@@ -31,6 +31,11 @@ mode_usage(){
   fi
 }
 
+arg_descritpion(){
+  echo "\t\t$1"
+  echo "\t\t\t$2"
+}
+
 check_mode(){
   is_avail=0
   for avail_mode in $avail_modes ; do
@@ -76,10 +81,30 @@ mode_help(){
       echo "\nDESCRIPTION\n\tCompute the average of the Kronecker power of the data in directory <dirname> until power <num_moments>, with respect to the key <avg_key> and a partial dataset of <n_samples> samples. The averaged data is placed in the directory <dirname>_avg(<avg_key>). It is mandatory to choose the amount of available memory <mem_avail> for the program."
       mode_usage $mode "<dirname> <avg_key> <num_moments> <mem_avail> <n_samples>" -p -f
       ;;
+    "haar_distance")
+      echo "\nDESCRIPTION\n\tGiven an ensemble of matrices, compute the distance between the moments of that ensemble and the moments provided by the Haar ensemble (Haar could be replace by any other ensemble as long as those moments are calculated beforehand and saved to disk)"
+      mode_usage $mode "<haar_dirname> <haar_basename> <dirname> <avg_key> <num_moments> <sample_res>" -p -f
+      echo "\nARGUMENTS"
+      arg_descritpion "<haar_dirname>" "Name of the subdirectory of LASAP_DATA_DIR where the Haar moments are stored."
+      arg_descritpion "<haar_basename>" "Base name of the files with the Haar moments. Expecting files named '<haar_basename>_k<k>_data.ext'"
+      arg_descritpion "<dirname>" "Directory name for ensemble data."
+      arg_descritpion "<avg_key>" "Average with respect to <avg_key>."
+      arg_descritpion "<num_moments>" "Number of moments computed."
+      arg_descritpion "<sample_res>" "Make the computations over <sample_res> logarithmically spaced number of samples between 1 and the total sample number. If <ample_res> == 1, just take the total sample number."
+      ;;
+    "haar_distance_frame_potential")
+      echo "\nDESCRIPTION\n\tGiven an ensemble of matrices, compute the distance between the moments of that ensemble and the moments provided by the Haar ensemble"
+      mode_usage $mode "<dirname> <avg_key> <num_moments> <sample_res>" -p -f
+      echo "\nARGUMENTS"
+      arg_descritpion "<dirname>" "Directory name for ensemble data."
+      arg_descritpion "<avg_key>" "Average with respect to <avg_key>."
+      arg_descritpion "<num_moments>" "Number of moments computed."
+      arg_descritpion "<sample_res>" "Make the computations over <sample_res> logarithmically spaced number of samples between 1 and the total sample number. If <ample_res> == 1, just take the total sample number."
+      ;;
   esac
 }
 
-avail_modes="merge average kron_moments kron_moments_partial"
+avail_modes="merge average kron_moments kron_moments_partial haar_distance haar_distance_frame_potential"
 
 HELP=0
 PARALLELIZE=0
@@ -142,6 +167,6 @@ else
       check_available_paralellization $mode
       args="$args $jobid $numjobs"
     fi
-    python -c "import lasap.pproc.parse_args" $mode $disk_format $args
+    python -u -c "import lasap.pproc.parse_args" $mode $disk_format $args
   fi
 fi
