@@ -36,6 +36,7 @@ def haar_distance_obs(obs, haar_dirname, haar_basename, avg_key, num_moments, sa
         if(sample_res == 1):
             n_samples = [samples_found]
 
+        newkeys = np.concatenate([[samp, k], keys[i]])
         print("Found", samples_found, "samples in observable", obs.get_name(), "with keys", keynames, "=", keys)
 
         o_shape = val.shape
@@ -65,7 +66,7 @@ def haar_distance_obs(obs, haar_dirname, haar_basename, avg_key, num_moments, sa
                 # Distance
                 for e,k in enumerate(ks):
                     dist = np.linalg.norm(avg[e]/samp - haar_moments[e], axis = (1,2))/norm_haar_moments[e]
-                    dist_obs.append(dist.reshape(shape), [samp, k] + keys[i])
+                    dist_obs.append(dist.reshape(shape), newkeys)
             progress.print_progress(n)
 
     return dist_obs

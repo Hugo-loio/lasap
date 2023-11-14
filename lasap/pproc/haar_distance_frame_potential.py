@@ -32,7 +32,8 @@ def haar_distance_obs(obs, avg_key, num_moments, sample_res, timer):
         if(sample_res == 1):
             n_samples = [samples_found]
 
-        print("Found", samples_found, "samples in observable", obs.get_name(), "with keys", keynames, "=", keys)
+        newkeys = np.concatenate([[samp, k], keys[i]])
+        print("Found", samples_found, "samples in observable", obs.get_name(), "with keys", keynames, "=", newkeys)
 
         o_shape = val.shape
         mid_dim = int(np.prod(shape))
@@ -67,7 +68,7 @@ def haar_distance_obs(obs, avg_key, num_moments, sample_res, timer):
                         frame_potential[e,j] *= frame_potential[e,j]
 
                 for e,k in enumerate(ks):
-                    dist_obs.append(np.sqrt(frame_potential[e]/haar_frame_potential[e] - 1).reshape(shape), [samp, k] + keys[i])
+                    dist_obs.append(np.sqrt(frame_potential[e]/haar_frame_potential[e] - 1).reshape(shape), newkeys)
             progress.print_progress(n)
 
     return dist_obs
