@@ -10,7 +10,7 @@ from lasap.utils.timer import Timer
 from lasap.utils import io
 
 def haar_distance_obs(obs, haar_dirname, haar_basename, avg_key, num_moments, sample_res, timer):
-    keys, vals, keynames= obs.get_merged_key_data(avg_key)
+    keys, vals, oldkeynames= obs.get_merged_key_data(avg_key)
     ks = np.arange(1, num_moments+0.5, dtype = int)
 
     name = obs.props.loc[0,'name'] + "_deltaHaar(" + avg_key + ")" 
@@ -19,7 +19,7 @@ def haar_distance_obs(obs, haar_dirname, haar_basename, avg_key, num_moments, sa
     shape = tuple(shape)
     complex_data = False
     props = {}
-    keynames = ['n_samples', 'k']  + keynames
+    keynames = ['n_samples', 'k']  + oldkeynames
     dist_obs = Observable(name, shape, keynames, props, complex_data, inherit_props = obs.props)
 
     haar_moments = []
@@ -36,8 +36,7 @@ def haar_distance_obs(obs, haar_dirname, haar_basename, avg_key, num_moments, sa
         if(sample_res == 1):
             n_samples = [samples_found]
 
-        newkeys = np.concatenate([[samp, k], keys[i]])
-        print("Found", samples_found, "samples in observable", obs.get_name(), "with keys", keynames, "=", keys)
+        print("Found", samples_found, "samples in observable", obs.get_name(), "with keys", oldkeynames, "=", keys[i])
 
         o_shape = val.shape
         mid_dim = int(np.prod(shape))
@@ -66,7 +65,7 @@ def haar_distance_obs(obs, haar_dirname, haar_basename, avg_key, num_moments, sa
                 # Distance
                 for e,k in enumerate(ks):
                     dist = np.linalg.norm(avg[e]/samp - haar_moments[e], axis = (1,2))/norm_haar_moments[e]
-                    dist_obs.append(dist.reshape(shape), newkeys)
+                    dist_obs.append(dist.reshape(shape), np.concatenate([[samp, k], keys[i]]))
             progress.print_progress(n)
 
     return dist_obs
