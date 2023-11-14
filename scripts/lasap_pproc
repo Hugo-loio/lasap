@@ -50,7 +50,7 @@ check_mode(){
 }
 
 check_available_paralellization(){
-  para_modes="average kron_moments kron_moments_partial" 
+  para_modes="average kron_moments kron_moments_partial haar_distance haar_distance_frame_potential" 
   is_para=0
   for para_mode in $para_modes ; do
     if [ "$para_mode" = "$1" ]; then
