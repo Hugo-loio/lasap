@@ -70,7 +70,7 @@ match mode:
             numjobs = int(sys.argv[10])
         pproc.haar_distance.haar_distance(haar_dirname, haar_basename, avg_key, num_moments, sample_res, Parallelizer(dirname, jobid, numjobs), disk_format)
     case "haar_distance_frame_potential":
-        argc = (7,9)
+        argc = check_argc(7,9)
         dirname = sys.argv[3]
         avg_key = sys.argv[4]
         num_moments = int(sys.argv[5])

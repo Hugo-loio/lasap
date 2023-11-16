@@ -13,7 +13,6 @@ class Parallelizer:
         io.check_dir(path)
         files = io.ls_data_files(path)
         files_per_job = math.ceil(len(files)/numjobs)
-        print(files_per_job)
         if(jobid > len(files)):
             self.files = []
             self.numfiles = 0
