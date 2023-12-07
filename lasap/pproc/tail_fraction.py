@@ -48,4 +48,4 @@ def tail_fraction(avg_key, tail, parallelizer, disk_format):
         obs.to_disk(dirname = new_dirname)
         progress.print_progress(i)
 
-    print("Finished haar_distance, job ID:", parallelizer.jobid)
+    print("Finished tail_fraction, job ID:", parallelizer.jobid)

@@ -43,3 +43,5 @@ def average(avg_key, parallelizer, disk_format):
         obs_avg.set_disk_format(disk_format)
         obs_avg.to_disk(dirname = avg_dirname)
         progress.print_progress(i)
+
+    print("Finished average, job ID:", parallelizer.jobid)
