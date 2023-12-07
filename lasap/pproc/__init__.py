@@ -7,6 +7,7 @@ __all__ = [
         "merge_daemon",
         "merge",
         "parallelizer",
+        "tail_fraction",
         ]
 
 from lasap.pproc import *

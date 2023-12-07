@@ -25,8 +25,6 @@ pip install --user --break-system-packages $pkg || pip install --user $pkg
 
 cp $pkg/scripts/* $HOME/.local/bin #2>/dev/null TODO: find a better solution for this
 
-#exit
-
 langs="julia dummy"
 
 echo "\nChoose languages to install interfaces:"

@@ -50,7 +50,7 @@ check_mode(){
 }
 
 check_available_paralellization(){
-  para_modes="average kron_moments kron_moments_partial haar_distance haar_distance_frame_potential" 
+  para_modes="average kron_moments kron_moments_partial haar_distance haar_distance_frame_potential tail_fraction" 
   is_para=0
   for para_mode in $para_modes ; do
     if [ "$para_mode" = "$1" ]; then
@@ -101,10 +101,18 @@ mode_help(){
       arg_descritpion "<num_moments>" "Number of moments computed."
       arg_descritpion "<sample_res>" "Make the computations over <sample_res> logarithmically spaced number of samples between 1 and the total sample number. If <ample_res> == 1, just take the total sample number."
       ;;
+    "tail_fraction")
+      echo "\nDESCRIPTION\n\tCompute the fraction of values that within a tail of the distribuition of data"
+      mode_usage $mode "<dirname> <avg_key> <tail>" -p -f
+      echo "\nARGUMENTS"
+      arg_descritpion "<dirname>" "Directory name for ensemble data."
+      arg_descritpion "<avg_key>" "Average with respect to <avg_key>."
+      arg_descritpion "<tail>" "Tail limit, meaning x < tail if x is within the tail limits."
+      ;;
   esac
 }
 
-avail_modes="merge average kron_moments kron_moments_partial haar_distance haar_distance_frame_potential"
+avail_modes="merge average kron_moments kron_moments_partial haar_distance haar_distance_frame_potential tail_fraction"
 
 HELP=0
 PARALLELIZE=0

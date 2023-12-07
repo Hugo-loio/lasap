@@ -79,3 +79,12 @@ match mode:
             jobid = int(sys.argv[7])
             numjobs = int(sys.argv[8])
         pproc.haar_distance_frame_potential.haar_distance_frame_potential(avg_key, num_moments, sample_res, Parallelizer(dirname, jobid, numjobs), disk_format)
+    case "tail_fraction":
+        argc = check_argc(6,8)
+        dirname = sys.argv[3]
+        avg_key = sys.argv[4]
+        tail = float(sys.argv[5])
+        if(argc == 8):
+            jobid = int(sys.argv[6])
+            numjobs = int(sys.argv[7])
+        pproc.tail_fraction.tail_fraction(avg_key, tail, Parallelizer(dirname, jobid, numjobs), disk_format)
