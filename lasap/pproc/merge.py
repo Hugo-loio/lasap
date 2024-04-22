@@ -1,6 +1,7 @@
 import time
 import os
 import tarfile
+import gc
 
 import lasap.containers.observable as observable
 from lasap.utils import io
@@ -76,7 +77,8 @@ def merge(dirname : str, disk_format):
                 delete_tar = False
         if(delete_tar):
             os.remove(path + "/" + tarname)
-
+            
+        #gc.collect()
         progress.print_progress(i)
 
     if len(os.listdir(path)) == 0:
