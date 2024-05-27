@@ -1,4 +1,5 @@
 import math
+import os
 
 import lasap.containers.observable as observable
 from lasap.utils import io
@@ -10,7 +11,9 @@ class Parallelizer:
         self.numjobs = numjobs
 
         path = io.data_dir() + dirname
-        io.check_dir(path)
+        if(not os.path.isdir(path)):
+            raise FileNotFoundError("Did not find directory " + path)
+        #io.check_dir(path)
         files = io.ls_data_files(path)
         files_per_job = math.ceil(len(files)/numjobs)
         if(jobid > len(files)):
