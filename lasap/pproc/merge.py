@@ -39,7 +39,8 @@ def merge(dirname : str, disk_format):
     exts = ['.' + ext for ext in SUPPORTED_DISK_FORMATS]
     merged_names = []
     path = io.data_dir() + dirname
-    io.check_dir(path)
+    if(not os.path.isdir(path)):
+        raise FileNotFoundError("Did not find directory " + path)
     merged_dirname = dirname + "_merged"
     merged_path = io.data_dir() + merged_dirname
     io.check_dir(merged_path)
