@@ -97,7 +97,10 @@ class Observable:
         keys, vals = [], []
         if(len(remain_keynames) > 0):
             gs = self.data.groupby(remain_keynames)
-            grouped_dfs = [gs.get_group(g).drop(columns=[key]) for g in gs.groups]
+            if(len(remain_keynames) == 1):
+                grouped_dfs = [gs.get_group((g,)).drop(columns=[key]) for g in gs.groups]
+            else:
+                grouped_dfs = [gs.get_group(g).drop(columns=[key]) for g in gs.groups]
             num_keys = self.num_keys-1
             for df in grouped_dfs:
                 keys.append(df.iloc[0,:num_keys].to_numpy())
