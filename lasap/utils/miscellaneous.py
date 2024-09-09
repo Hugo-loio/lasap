@@ -8,7 +8,9 @@ def bin_list(dec, min_width : int = 0):
     else:
         return [int(i) for i in list('{0:b}'.format(dec))]
 
-def check_argc(argc):
+def check_argc(argc, verbose = True):
+    if(verbose):
+        print("Checking args:", print(sys.argv))
     if(len(sys.argv) != argc):
         print("ERROR: Expected " + str(argc) + " command line arguments, exiting script...")
         sys.exit()
