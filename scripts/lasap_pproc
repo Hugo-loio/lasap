@@ -32,8 +32,8 @@ mode_usage(){
 }
 
 arg_descritpion(){
-  echo "\t\t$1"
-  echo "\t\t\t$2"
+  echo "\t$1"
+  echo "\t\t$2"
 }
 
 check_mode(){
@@ -83,14 +83,13 @@ mode_help(){
       ;;
     "haar_distance")
       echo "\nDESCRIPTION\n\tGiven an ensemble of matrices, compute the distance between the moments of that ensemble and the moments provided by the Haar ensemble (Haar could be replace by any other ensemble as long as those moments are calculated beforehand and saved to disk)"
-      mode_usage $mode "<haar_dirname> <haar_basename> <dirname> <avg_key> <num_moments> <sample_res>" -p -f
+      mode_usage $mode "<dirname> <avg_key> <norm> <num_moments> <sample_res>" -p -f
       echo "\nARGUMENTS"
-      arg_descritpion "<haar_dirname>" "Name of the subdirectory of LASAP_DATA_DIR where the Haar moments are stored."
-      arg_descritpion "<haar_basename>" "Base name of the files with the Haar moments. Expecting files named '<haar_basename>_k<k>_data.ext'"
       arg_descritpion "<dirname>" "Directory name for ensemble data."
       arg_descritpion "<avg_key>" "Average with respect to <avg_key>."
+      arg_descritpion "<norm>" "Norm to apply when computing the distance. The available norms are:\n\t\t\ttrace - Trace norm, trace(sqrt(rho*rho^dagger))\n\t\t\tfrob - Frobenious norm, sqrt(trace(rho*rho^dagger))"
       arg_descritpion "<num_moments>" "Number of moments computed."
-      arg_descritpion "<sample_res>" "Make the computations over <sample_res> logarithmically spaced number of samples between 1 and the total sample number. If <ample_res> == 1, just take the total sample number."
+      arg_descritpion "<sample_res>" "Make the computations over <sample_res> logarithmically spaced number of samples between 1 and the total sample number. If <sample_res> == 1, just take the total sample number."
       ;;
     "haar_distance_frame_potential")
       echo "\nDESCRIPTION\n\tGiven an ensemble of matrices, compute the distance between the moments of that ensemble and the moments provided by the Haar ensemble"
@@ -99,7 +98,7 @@ mode_help(){
       arg_descritpion "<dirname>" "Directory name for ensemble data."
       arg_descritpion "<avg_key>" "Average with respect to <avg_key>."
       arg_descritpion "<num_moments>" "Number of moments computed."
-      arg_descritpion "<sample_res>" "Make the computations over <sample_res> logarithmically spaced number of samples between 1 and the total sample number. If <ample_res> == 1, just take the total sample number."
+      arg_descritpion "<sample_res>" "Make the computations over <sample_res> logarithmically spaced number of samples between 1 and the total sample number. If <sample_res> == 1, just take the total sample number."
       ;;
     "tail_fraction")
       echo "\nDESCRIPTION\n\tCompute the fraction of values that within a tail of the distribuition of data"

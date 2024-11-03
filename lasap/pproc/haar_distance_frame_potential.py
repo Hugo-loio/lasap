@@ -86,4 +86,4 @@ def haar_distance_frame_potential(avg_key, num_moments, sample_res, parallelizer
         dist_obs.set_disk_format(disk_format)
         dist_obs.to_disk(dirname = new_dirname)
 
-    print("Finished haar_distance, job ID:", parallelizer.jobid)
+    print("Finished haar_distance_frame_potential, job ID:", parallelizer.jobid)
