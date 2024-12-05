@@ -1,21 +1,7 @@
 #!/bin/sh
 
-julia_dependencies(){
-  echo "Checking dependencies..."
-  dependencies="DataFrames OrderedCollections"
-  pkgs=$(julia -e "using Pkg; Pkg.status()")
-
-  for dependency in $dependencies ; do
-    if [ -z $(echo $pkgs | sed 's/\ /\n/g' | grep $dependency) ] ; then
-      echo "Installing" $dependency".jl"
-      julia -e "using Pkg; Pkg.add(\"$dependency\")"
-    fi
-  done
-}
-
 julia_install(){
   echo "Installing julia interface"
-  #julia_dependencies
   julia -e "using Pkg; Pkg.develop(path=\"$pkg/julia/LasapInterface\")"
 }
 
