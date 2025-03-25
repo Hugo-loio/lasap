@@ -11,3 +11,9 @@ if [ ! -z "$(which julia)" ] ; then
   [ -z "$(echo $pkgs | grep "LasapInterface")" ] || 
     julia -e "using Pkg; Pkg.rm(\"LasapInterface\")"
 fi
+
+cpp_build_dir="$pkg/CPP/LasapInterface/build"
+if [ -d $cpp_build_dir ] ; then
+  cd $cpp_build_dir
+  make uninstall
+fi

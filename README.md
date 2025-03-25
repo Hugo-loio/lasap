@@ -2,12 +2,13 @@
 
 This package provides interfaces in different languages for creating data structures based on a series of labeled multi-dimensional arrays. 
 Each data set is identifiable with an arbitrary number of properties. 
-It utilizes the Apache Parquet file format for data storage and communication between different languages.
-It also provides a script for post-processing the data, e.g. averaging over a label (key), implemented in python.
+It utilizes either the CSV or the Apache Parquet file formats for data storage.
+It also provides a CLI tool for post-processing the data, i.e. merging data, averaging over a label (key) etc.
 
-Currently only Python and Julia are supported.
+All the post-processing utilities are coded in Python but the API for data storage can be installed also in Julia and C++.
+(The C++ API does not currently support the Parquet file format).
 
-**Disclamer:** This package is mostly intended for personal use and is not documented. 
+**Disclamer:** This package is mostly intended for personal use and is not properly documented. 
 
 ## Installation
 
@@ -15,4 +16,4 @@ Install and uninstall with the provided scripts in the root folder.
 
 ## TODO
 
-* Choose data types for keys and data
+* Choose data types for keys and data (potentially lighter data files).

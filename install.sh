@@ -1,17 +1,27 @@
 #!/bin/sh
 
 julia_install(){
-  echo "Installing julia interface"
+  echo "\nInstalling the julia interface..."
   julia -e "using Pkg; Pkg.develop(path=\"$pkg/julia/LasapInterface\")"
 }
 
-pkg=$(dirname "$0")
+cpp_install(){
+  echo "\nInstalling the C++ interface..."
+  build_dir="$pkg/CPP/LasapInterface/build"
+  [ -d $build_dir ] || mkdir $build_dir
+  cd $build_dir
+  cmake .. 
+  make
+  make install
+}
+
+pkg=$(dirname $(realpath "$0"))
 
 pip install --user --break-system-packages $pkg || pip install --user $pkg
 
 cp $pkg/scripts/* $HOME/.local/bin #2>/dev/null TODO: find a better solution for this
 
-langs="julia dummy"
+langs="julia c++"
 
 echo "\nChoose languages to install interfaces:"
 i=1
@@ -27,6 +37,9 @@ for number in $answer ; do
     case $lang in
       "julia")
 	julia_install
+	;;
+      "c++")
+	cpp_install
 	;;
     esac
   else
