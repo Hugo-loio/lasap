@@ -11,7 +11,6 @@ cpp_install(){
   [ -d $build_dir ] || mkdir $build_dir
   cd $build_dir
   cmake .. 
-  make
   make install
 }
 

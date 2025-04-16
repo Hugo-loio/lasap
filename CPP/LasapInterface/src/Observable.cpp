@@ -94,9 +94,14 @@ void Observable::todisk(const std::string& dirname, std::string name, bool verbo
   check_dir(path);
   path += dirname;
   check_dir(path);
+
   if (name.empty()) name = props[0].second;
-  std::string path_props = path + "/" + name + "_props." + diskformat;
-  std::string path_data = path + "/" + name + "_data." + diskformat;
+
+  std::string name_props = name + "_props." + diskformat;
+  std::string name_data = name + "_data." + diskformat;
+
+  std::string path_props = path + "/" + name_props;
+  std::string path_data = path + "/" + name_data;
 
   if (diskformat == "csv") {
     std::ofstream props_file(path_props);
@@ -137,6 +142,20 @@ void Observable::todisk(const std::string& dirname, std::string name, bool verbo
 
   if(verbose){
     std::cout << "Outputted data files to: " << path << "/" << name << std::endl;
+  }
+
+  if (!tarname.empty()) {
+    std::string tarpath = path + "/" + tarname + ".tar";
+
+    std::string tar_command = "tar -rf " + tarpath + " -C " + path + " " + name_props + " " + name_data;
+    std::system(tar_command.c_str());
+
+    std::remove(path_props.c_str());
+    std::remove(path_data.c_str());
+
+    if (verbose) {
+      std::cout << "Bundled into archive: " << tarpath << std::endl;
+    }
   }
 }
 

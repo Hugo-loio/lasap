@@ -3,5 +3,6 @@
 
 #include "NDArray.h"
 #include "Observable.h"
+#include "Progress.h"
 
 #endif
