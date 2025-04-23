@@ -33,12 +33,12 @@ int Observable::append(
     const std::vector<double> & keyvals,
     bool check_duplicate, bool replace) {
 
-  if(array.size != datasize){
+  if(array.getSize() != datasize){
     throw std::invalid_argument("Appended array does not match the data expected size.");
   }
 
-  std::vector<double> rowdata(array.size, 0.0);
-  for(int i = 0; i < array.size; i++){
+  std::vector<double> rowdata(array.getSize(), 0.0);
+  for(int i = 0; i < array.getSize(); i++){
     rowdata[i] = double(array.at(i));
   }
 
@@ -63,14 +63,14 @@ int Observable::append(
     const std::vector<double> & keyvals,
     bool check_duplicate, bool replace) {
 
-  if(2*array.size != datasize){
+  if(2*array.getSize() != datasize){
     throw std::invalid_argument("Appended array does not match the data expected size.");
   }
 
-  std::vector<double> rowdata(2*array.size, 0.0);
-  for(int i = 0; i < array.size; i++){
+  std::vector<double> rowdata(2*array.getSize(), 0.0);
+  for(int i = 0; i < array.getSize(); i++){
     rowdata[i] = double(array.at(i).real());
-    rowdata[array.size + i] = double(array.at(i).imag());
+    rowdata[array.getSize() + i] = double(array.at(i).imag());
   }
 
   if (check_duplicate) {
