@@ -114,6 +114,14 @@ class Observable:
             vals.append([])
             for i, row in df.iterrows():
                 vals[-1].append(self.__reshape(row.iloc[:].to_numpy()))
+
+        # Check if final array is correctly shaped and truncate if not
+        lens = [len(x) for x in vals]
+        minlen = np.min(lens)
+        for i,l in enumerate(lens):
+            if(l > minlen):
+                vals[i] = vals[i][:minlen]
+
         return keys, np.array(vals), remain_keynames
 
     def to_numpy(self):
